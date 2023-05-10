@@ -5,6 +5,8 @@ if (!empty($_GET) && isset($_GET["source"])){
 }
 
 session_start();
+
+require "fonctions.php";
 ?>
 
 <!DOCTYPE html>
@@ -19,6 +21,7 @@ session_start();
     <?php
         if (!empty($_SESSION) && isset($_SESSION["pseudo"])){
             if (isset($_SESSION["statut"]) && $_SESSION["statut"] === "administrateur"){
+                genNavBar($_SESSION["statut"]);
                 echo "<h1>Welcome admin</h1>";
             }
             else{

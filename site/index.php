@@ -5,6 +5,8 @@ if (!empty($_GET) && isset($_GET["source"])){
 }
 
 session_start();
+
+require "fonctions.php";
 ?>
 
 <!DOCTYPE html>
@@ -16,7 +18,9 @@ session_start();
     <title>Document</title>
 </head>
 <body>
-    
+    <?php
+        genNavBar($_SESSION["statut"])
+    ?>
 
 
 </body>
