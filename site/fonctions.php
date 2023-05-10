@@ -1,5 +1,8 @@
 <?php
 
+session_start();
+
+
 function genNavBar($statut){
 
     ?>
@@ -19,10 +22,15 @@ function genNavBar($statut){
     }
 
     echo '<li>langue</li>';
-    echo '<li>deconnexion</li>';
+    echo '<li><a href="deconnexion.php">deconnexion</a></li>';
     echo '</ul>';
 
 }
 
+
+function logout(){
+    session_destroy();
+    $_SESSION = array();
+}
 
 ?>

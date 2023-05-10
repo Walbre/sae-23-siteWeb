@@ -4,8 +4,6 @@ if (!empty($_GET) && isset($_GET["source"])){
     die();
 }
 
-session_start();
-
 require "fonctions.php";
 ?>
 
