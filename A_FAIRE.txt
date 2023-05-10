@@ -1,0 +1,41 @@
+
+BDD à créer : 
+
+CREATE TABLE "comptes" (
+"login" VARCHAR PRIMARY KEY NOT NULL,
+"motdepasse" VARCHAR DEFAULT lannion,
+"statut" VARCHAR NOT NULL DEFAULT utilisateur)
+
+
+- Page connexion (moi)
+- Page Index (moi + b)
+- Page Insertion (b)
+- Page modification (moi)
+- Page Suppression (b)
+
+- Maquette de l'application
+- Hébergement sur le serveur web interne de R&T avec une solution PAAS avec Azure (cf Sys2)
+- Encodage en UTF-8
+
+Options : 
+
+1 - Script javascript => Verification du login : 1 MAJ un caractère spé. (!,*,etc.) sinon bloqué. (connexion)
+3 - La vérification du formulaire (insertion) doit se faire au niveau du serveur avec une CAPTCHA. (insertion)
+5 - en mettant en œuvre la technique de programmation AJAX. Le serveur retournera 
+(via AJAX) un affichage HTML des informations mises à jour (modification)
+
+BDD : Représentants 
+
+- 10 enregistrements min. par table
+- Photo de profil pour les utilisateurs dans la BDD avec photo par defaut sinon admin peut modif
+
+
+Pour chaque séance sur mattermost : 
+
+• Point d'avancement séance n°XX
+• Lieu de travail : Salle XX
+• Méthode de travail : binôme/seul
+• Tâches prévues pendant la séance :
+• Tâches traitées pendant la séance :
+• Problèmes rencontrés :
+• Tâches prévues avant la prochaine séance :
