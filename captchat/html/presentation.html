@@ -8,14 +8,47 @@
 </head>
 <body>
     <h1>Le meilleur système de captcha au monde.</h1>
-    <h2>Utilisation : </h2>
+    <h2>Explications : </h2>
 
-    <a href="exemple">exemple</a>
+    <p>Le but de ce projet est de faire un captcha ... mais avec des chats. Je pense pas qu'il y ait besoin de plus d'explications.</p>
+
+    <h2>Fonctionnement : </h2>
+
+    <p>Afin d'utiliser cette merveille technologique, il y a 2 endpoints.</p>
+
+    <ol>
+        <li><h3>/getcaptchat</h3>
+            <p>
+                Cet endpoint est à accéder avec un get, il renverra du json contenant un id ainsi qu'une liste de 9 images en base 64.
+                L'id est a conserver et servira a verifier le captchat. Les images seront dans un liste accessible avec la clé "images"
+                et seront encodé en base64 avec le descriptif qu'il faut, il ne reste plus qu'a les inserer directement dans le src.
+            </p>
+        </li>
+        <li><h3>/verifycaptchat</h3>
+            <p>
+                Cet endpoint sert à verifier le captchat, pour celà, il faut y acceder avec un post, contenant les valeurs "id" qui est l'id 
+                récuperé dans le get précédent et "solve" qui est une représsentation binaire de la réponse. Imaginons que les images 1, 4 et 7 sont 
+                des chats, alors il faudra renvoyer la valeur solve à "100100100" pour que le captchat soit validé.
+                Si le captchat est validé alors la valeur "reponse" sera égale à "true" sinon elle sera mise à "false" et la valeur "erreur"
+                contiendra la raison.
+            </p>
+        </li>
+    </ol>
+
+    <h2><a href="exemple">Un exemple est dispo juste ici</a></h2>
 
     <style>
         h1{
             text-align: center;
         }
+        body{
+            color: #e3e3e3;
+            background-color: #6f6f6f;
+        }
+        h3{
+            color: #3e3e3e;
+        }
+
     </style>
 </body>
 </html>
