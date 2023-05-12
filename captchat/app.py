@@ -16,6 +16,12 @@ db = sqldb("bdd/tokens.sqlite")
 
 session_req = requests.Session()
 
+ALL_BASE64 = {}
+
+for file_path in ALL_FILES:
+    with open(f"assets/{file_path}", 'rb') as f:
+        ALL_BASE64[file_path] = f"data:image/jpeg;base64,{b64encode(f.read()).decode('utf-8')}"
+
 
 @app.context_processor
 def sess():
@@ -34,8 +40,7 @@ def create_captchat():
         else:
             captchat_rep += "0"
         
-        with open(f"assets/{file_path}", 'rb') as f:
-            choosen_files.append(f"data:image/jpeg;base64,{b64encode(f.read()).decode('utf-8')}")
+        choosen_files.append(ALL_BASE64[file_path])
     
     
 
@@ -130,4 +135,4 @@ def exemple():
     return content
 
 
-app.run('0.0.0.0', 8080, debug=True)
+app.run('0.0.0.0', 8080)
