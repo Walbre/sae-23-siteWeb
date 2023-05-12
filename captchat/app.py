@@ -1,16 +1,25 @@
-from flask import Flask, request
+from flask import Flask, request, session
 import os
 from random import randint
 from base64 import b64encode
 from sqlconn import sqldb
+import requests
 
 os.chdir(os.path.dirname(__file__))
 
 app = Flask(__name__)
+app.secret_key = "".join("abccdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"[randint(0, 61)] for i in range(64))
 
 ALL_FILES = os.listdir("assets/")
 
 db = sqldb("bdd/tokens.sqlite")
+
+session_req = requests.Session()
+
+
+@app.context_processor
+def sess():
+    return dict(session=session)
 
 @app.route("/getcaptchat", methods=["GET"])
 def create_captchat():
@@ -90,6 +99,35 @@ def verify_captchat():
                 "error" : "Mauvaise reponse"
                 }
 
+
+@app.route("/", methods=["GET"])
+def presentation():
+    with open("html/presentation.html", encoding='utf-8') as f:
+        return f.read()
+        
+
+
+@app.route("/exemple", methods=["GET", "POST"])
+def exemple():
+    if request.method == "POST" and len(session) == 1:
+        rep = request.form.get("rep")
+        if rep != None and type(rep) == str:
+            # verification du captchat
+            resp = session_req.post("http://127.0.0.1:8080/verifycaptchat", data={"id":session["id"], "solve":rep}).json()
+            if resp["reponse"] == "true":
+                with open("html/conn_reussi.html", encoding='utf-8') as f:
+                    return f.read()
+    
+    
+    # generation du captchat
+    with open("html/exemple.html", encoding='utf-8') as f:
+        content = f.read()
+    resp = session_req.get("http://127.0.0.1:8080/getcaptchat").json()
+    session["id"] = str(resp["id"])
+    images = resp["images"]
+    for i in range(9):
+        content = content.replace("{img"+str(i)+"}", images[i])
+    return content
 
 
 app.run('0.0.0.0', 8080, debug=True)

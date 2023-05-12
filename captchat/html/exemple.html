@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemple</title>
+</head>
+<body>
+    <h1>Séléctionnez tous les chats</h1>
+    <article>
+        <img src="{img0}" alt="captchat0" onclick="isClicked(this)">
+        <img src="{img1}" alt="captchat1" onclick="isClicked(this)">
+        <img src="{img2}" alt="captchat2" onclick="isClicked(this)">
+        <img src="{img3}" alt="captchat3" onclick="isClicked(this)">
+        <img src="{img4}" alt="captchat4" onclick="isClicked(this)">
+        <img src="{img5}" alt="captchat5" onclick="isClicked(this)">
+        <img src="{img6}" alt="captchat6" onclick="isClicked(this)">
+        <img src="{img7}" alt="captchat7" onclick="isClicked(this)">
+        <img src="{img8}" alt="captchat8" onclick="isClicked(this)">
+        <form action="" method="post">
+            <input type="hidden" id="rep" name="rep" value="000000000">
+            <input type="submit" name="connect" value="Connection"/>
+        </form>
+    </article>
+    <style>
+        h1{
+            text-align: center;
+        }
+        article{
+            display: block;
+            padding: 5%;
+            width: 40%;
+            margin: auto;
+            text-align: center;
+        }
+        article img{
+            width: 30%;
+        }
+        .clicked{
+            filter: brightness(0.5) sepia(1) saturate(25%) hue-rotate(190deg);
+        }
+        
+        img:hover {
+            opacity: 0.8;
+        }
+    </style>
+    <script>
+        var to_send = "000000000"
+        function isClicked(endroit){
+            index = parseInt(endroit.alt[8])
+            if (endroit.classList.contains("clicked")){
+                endroit.classList.remove("clicked")
+                to_send = to_send.substring(0, index) + "0" + to_send.substring(index+1);
+            }
+            else{
+                endroit.classList.add("clicked")
+                to_send = to_send.substring(0, index) + "1" + to_send.substring(index+1)
+            }
+            elem = document.getElementById("rep").value = to_send
+        }
+    </script>
+</body>
+</html>
