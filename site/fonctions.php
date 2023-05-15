@@ -50,4 +50,46 @@ function redirect($pas_co, $pas_admin){
     }
 }
 
+function get_table($qui){
+
+    $db = new PDO('sqlite:bdd/repr.sqlite');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    if ($qui === "repr"){
+        $requete = "SELECT NOMR, VILLE FROM REPRESENTANTS";
+    }
+    else if ($qui === "prod"){
+        $requete = "SELECT NOMP, COUL, PRIX FROM PRODUITS";
+    }
+    else{
+        $requete = "SELECT NOMR,REPRESENTANTS.VILLE, NOMC, CLIENTS.VILLE, NOMP, COUL, PRIX, QT FROM VENTES INNER JOIN REPRESENTANTS ON REPRESENTANTS.NR = VENTES.NR INNER JOIN CLIENTS ON CLIENTS.NC = VENTES.NC INNER JOIN PRODUITS ON PRODUITS.NP = VENTES.NP";
+    }
+
+
+    $res = $db->query($requete);
+    if ($res){
+        $tab = $res->fetchAll(PDO::FETCH_ASSOC);
+        return $tab;
+    }
+}
+
+function affiche_tableau($tableau, $head){
+    echo "<table>\n";
+    echo "<thead>\n<tr>\n";
+    foreach ($head as $cle){
+        echo "<th>$cle</th>";
+    }
+    echo "</tr>\n</thead>\n";
+    echo "<tbody>\n";
+    foreach($tableau as $tab){
+        echo "<tr>";
+        foreach($tab as $sous_tab){
+            echo "<td>$sous_tab</td>";
+        }
+        echo "</tr>\n";
+    }
+    echo "</tbody>\n";
+    echo "</table>\n";
+}
+
 ?>

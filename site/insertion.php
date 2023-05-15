@@ -20,7 +20,21 @@ require "fonctions.php";
         if (!empty($_SESSION) && isset($_SESSION["pseudo"])){
             if (isset($_SESSION["statut"]) && $_SESSION["statut"] === "administrateur"){
                 genNavBar($_SESSION["statut"]);
-                echo "<h1>Welcome admin</h1>";
+                echo "<h1>Bienvenue admin</h1>";
+                echo "<section>\n<h2>Form ici</h2>\n</section>";
+                echo "<section>\n<h2>Tables</h2>\n</section>";
+
+                echo "<article>";
+                affiche_tableau(get_table("repr"), ["Nom représentant", "Ville"]);
+                echo "</article>";
+
+                echo "<article>";
+                affiche_tableau(get_table("prod"), ["Nom produit", "Couleur", "Prix"]);
+                echo "</article>";
+
+                echo "<article>";
+                affiche_tableau(get_table(""), ["Nom représentant", "Ville représentant", "Nom client", "Nom client", "Nom produit", "Couleur", "Prix"]);
+                echo "</article>";
             }
         }
         else{
