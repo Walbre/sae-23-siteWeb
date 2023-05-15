@@ -33,4 +33,21 @@ function logout(){
     $_SESSION = array();
 }
 
+function genCaptchat(){
+    $url = "http://20.216.129.46/getcaptchat";
+    $contents = file_get_contents($url);
+    echo json_decode($contents);
+}
+
+function redirect($pas_co, $pas_admin){
+    if (!empty($_SESSION) && isset($_SESSION["statut"])){
+        if (!is_null($pas_admin) && $_SESSION["statut"] !== "administrateur"){
+            echo "<script>window.location = 'index.php'</script>";
+        }
+    }
+    else{
+        echo "<script>window.location = 'connexion.php'</script>";
+    }
+}
+
 ?>

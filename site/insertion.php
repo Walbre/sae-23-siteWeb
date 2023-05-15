@@ -22,13 +22,11 @@ require "fonctions.php";
                 genNavBar($_SESSION["statut"]);
                 echo "<h1>Welcome admin</h1>";
             }
-            else{
-                echo '<script>window.location = "index.php"</script>';
-            }
         }
         else{
-            echo '<script>window.location = "connection.php"</script>';
+            redirect("index.php", "conexion.php");
         }
+        
     ?>
 </body>
 </html>

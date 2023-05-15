@@ -18,7 +18,12 @@ require "fonctions.php";
 </head>
 <body>
     <?php
-        genNavBar($_SESSION["statut"])
+    if (isset($_SESSION) && isset($_SESSION["pseudo"])){
+        genNavBar($_SESSION["statut"]);
+    }
+    else{
+        redirect("connexion.php", null);
+    }
     ?>
 
 
