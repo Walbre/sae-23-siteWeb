@@ -12,27 +12,45 @@ require "fonctions.php";
 		<title>connexion</title>
 	</head>
     <body>
-        <section>
+<?php
+if (!empty($_GET) && isset($_GET["action"]) && $_GET["action"]=="logout") {
+				echo "supression";
+				session_destroy();
+				$_SESSION=array();
+			}			
 
-            <h1>Bienvenue sur la page connexion</h1>
+if (!empty($_POST) && isset($_POST['login']) && isset($_POST['pass']))	{		
+	if ( authentification($_POST["login"],$_POST["pass"]) )		{					
+		$_SESSION["login"]=$_POST["login"];
+			if ($_POST["login"]=="admin") {
+				$_SESSION["statut"]="administrateur";
+			}
+			else {
+			$_SESSION["statut"]="utilisateur";
+			}
+?>	
+	    
+<h1>Accueil depuis la page initiale</h1>
+<a href="index.php">Lien vers la section membre</a>		
+<p><a href="connexion.php?action=logout">Se déconnecter</a></p>
+	    
+<?php			
+				
+	}
+}
+			
 
-        <?php
-		if (empty($_SESSION)){
-        
-        ?>
-        
-        <h2>Veuillez saisir vos identifiants : </h2>
+if (empty($_SESSION)){
+?>
+	<form id="cnx" method="post" action="connexion.php">
+		<p><label for="login">Login :</label><input type="text" id="login" name="login" /></p>
+		<p><label for="pass">Mot de Passe :</label><input type="password" id="pass" name="pass" /></p>
+		<p><input type="submit" id="submit" name="submit" value="Connexion" /></p>
+	</form>
+<?php
+}
+?>	    
 
-        
-
-
-
-        <?php
-
-        }
-		?>
-
-        </section>
-    
+	    <p>test</p>
 
     </body>
