@@ -92,4 +92,41 @@ function affiche_tableau($tableau, $head){
     echo "</table>\n";
 }
 
+function formInsertion(){
+    ?>
+
+    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+        <fieldset>
+        <label for="id_table">Ville :</label> 
+            <select id="id_table" name="ville" size="1" onchange="changeForm($this)">
+                <option value="REPRESENTANTS">représentants</option>
+                <option value="VENTES">ventes</option>
+                <option value="PRODUITS">produits</option>
+            <select>
+        </fieldset>
+
+        <fieldset class="REPRESENTANTS">
+            <label for="id_nomr">Nom représentant : </label><input name="nom" id="id_nomr" required size="20" />
+            <label for="id_viller">Ville représentant : </label><input name="ville" id="id_viller" required size="20" />
+        </fieldset>
+
+        <fieldset class="VENTES">
+
+        </fieldset>
+
+        <fieldset class="PRODUITS">
+
+        </fieldset>
+
+        <input type="submit" value="Insérer"/>
+
+        <script>
+            function changeForm($name){
+                var names = ["REPRESENTANTS", "VENTES", "PRODUITS"]
+            }
+        </script>
+
+    <?php
+}
+
 ?>
