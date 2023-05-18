@@ -98,7 +98,7 @@ function formInsertion(){
     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
         <fieldset>
         <label for="id_table">Table :</label> 
-            <select id="id_table" name="table" size="1" onchange="changeForm($this)">
+            <select id="id_table" name="table" size="1" onchange="changeForm(this)">
                 <option value="REPRESENTANTS">représentants</option>
                 <option value="VENTES">ventes</option>
                 <option value="PRODUITS">produits</option>
@@ -121,12 +121,12 @@ function formInsertion(){
         <input type="submit" value="Insérer"/>
 
         <script>
-            function changeForm($name){
+            function changeForm(name){
                 var names = ["REPRESENTANTS", "VENTES", "PRODUITS"]
-                names.splice(names.indexOf(names.value), 1)
+                names.splice(names.indexOf(name.value), 1)
                 // invisible les autres
-                names.foreach(nom => document.getElementsByClassName(nom).foreach(elem => elem.style.visibility = 'hidden'))
-                document.getElementsByClassName(name.value).foreach(elem => elem.style.visibilty = 'visible')
+                names.forEach(nom => Array.from(document.getElementsByClassName(nom)).forEach(elem => elem.style.display = 'none'))
+                Array.from(document.getElementsByClassName(name.value)).forEach(elem => elem.style.display = 'block')
             }
         </script>
 
