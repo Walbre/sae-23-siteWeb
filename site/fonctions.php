@@ -101,8 +101,8 @@ function formInsertion(){
 
     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
         <fieldset>
-        <label for="id_table">Ville :</label> 
-            <select id="id_table" name="ville" size="1" onchange="changeForm($this)">
+        <label for="id_table">Table :</label> 
+            <select id="id_table" name="table" size="1" onchange="changeForm($this)">
                 <option value="REPRESENTANTS">représentants</option>
                 <option value="VENTES">ventes</option>
                 <option value="PRODUITS">produits</option>
@@ -127,6 +127,10 @@ function formInsertion(){
         <script>
             function changeForm($name){
                 var names = ["REPRESENTANTS", "VENTES", "PRODUITS"]
+                names.splice(names.indexOf(names.value), 1)
+                // invisible les autres
+                names.foreach(nom => document.getElementsByClassName(nom).foreach(elem => elem.style.visibility = 'hidden'))
+                document.getElementsByClassName(name.value).foreach(elem => elem.style.visibilty = 'visible')
             }
         </script>
 
