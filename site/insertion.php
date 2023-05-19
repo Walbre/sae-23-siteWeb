@@ -34,7 +34,7 @@ require "fonctions.php";
                 echo "</article>\n";
 
                 echo "<article>\n<h3>Tout</h3>\n";
-                affiche_tableau(get_table(""), ["Nom représentant", "Ville représentant", "Nom client", "Nom client", "Nom produit", "Couleur", "Prix"]);
+                affiche_tableau(get_table(""), ["Nom représentant", "Ville représentant", "Nom client", "Ville client", "Nom produit", "Couleur", "Prix", "Quantité"]);
                 echo "</article>\n";
             }
         }
