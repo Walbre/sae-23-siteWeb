@@ -101,29 +101,31 @@ function formInsertion(){
 
     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
         <fieldset>
-        <label for="id_table">Table :</label> 
+            <label for="id_table">Table :</label> 
             <select id="id_table" name="table" size="1" onchange="changeForm(this)">
                 <option value="REPRESENTANTS">représentants</option>
                 <option value="VENTES">ventes</option>
                 <option value="PRODUITS">produits</option>
             <select>
+
+            <article class="REPRESENTANTS">
+                <label for="id_nomr">Nom représentant : </label><input name="nom" id="id_nomr" required size="20" />
+                <label for="id_viller">Ville représentant : </label><input name="ville" id="id_viller" required size="20" />
+            </article>
+
+            <article class="VENTES">
+                <label for="id_nomprod">Nom produit : </label><input name="nom" id="id_nomprod" required size="20" />
+                <label for="id_couleurprod">Couleur : </label><input name="couleur" id="id_couleurprod" required size="20" />
+                <label for="id_prixprod">Prix : </label><input name="prix" id="id_prixprod" required size="20" type="number"/>
+            </article>
+
+            <article class="PRODUITS">
+                
+            </article>
+
+            <input type="submit" value="Insérer"/>
+
         </fieldset>
-
-        <fieldset class="REPRESENTANTS">
-            <label for="id_nomr">Nom représentant : </label><input name="nom" id="id_nomr" required size="20" />
-            <label for="id_viller">Ville représentant : </label><input name="ville" id="id_viller" required size="20" />
-        </fieldset>
-
-        <fieldset class="VENTES">
-
-        </fieldset>
-
-        <fieldset class="PRODUITS">
-
-        </fieldset>
-
-        <input type="submit" value="Insérer"/>
-
         <script>
             function changeForm(name){
                 var names = ["REPRESENTANTS", "VENTES", "PRODUITS"]
@@ -132,6 +134,7 @@ function formInsertion(){
                 names.forEach(nom => Array.from(document.getElementsByClassName(nom)).forEach(elem => elem.style.display = 'none'))
                 Array.from(document.getElementsByClassName(name.value)).forEach(elem => elem.style.display = 'block')
             }
+            changeForm(document.getElementById('id_table'))
         </script>
 
     <?php
