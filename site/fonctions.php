@@ -106,23 +106,56 @@ function formInsertion(){
                 <option value="REPRESENTANTS">représentants</option>
                 <option value="VENTES">ventes</option>
                 <option value="PRODUITS">produits</option>
-            <select>
+            </select>
 
             <article class="REPRESENTANTS">
                 <label for="id_nomr">Nom représentant : </label><input name="nom" id="id_nomr" required size="20" />
                 <label for="id_viller">Ville représentant : </label><input name="ville" id="id_viller" required size="20" />
             </article>
 
-            <article class="VENTES">
+            <article class="PRODUITS">
                 <label for="id_nomprod">Nom produit : </label><input name="nom" id="id_nomprod" required size="20" />
                 <label for="id_couleurprod">Couleur : </label><input name="couleur" id="id_couleurprod" required size="20" />
                 <label for="id_prixprod">Prix : </label><input name="prix" id="id_prixprod" required size="20" type="number" min="0"/>
             </article>
 
-            <article class="PRODUITS">
-                <?php
-                    $requete_rep = "SELECT NR as id, NOMR || ' de ' || VILLE AS field FROM REPRESENTANTS"
-                ?>
+            <article class="VENTES">
+                <label for="id_venterepr">Représentant :</label>
+                <select id="id_venterepr" name="repr" size="1">
+                    <?php
+                        $db = new PDO('sqlite:bdd/repr.sqlite');
+                        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                        $requete_repr = "SELECT NR as id, NOMR || ' de ' || VILLE AS field FROM REPRESENTANTS";
+
+                        $res = $db->query($requete_repr);
+                        if ($res){
+                            $tab = $res->fetchAll(PDO::FETCH_ASSOC);
+                            foreach($tab as $val){
+                                echo "<option value=".$val["id"].">".$val["field"]."</option>\n";
+                            }
+                        }
+                    ?>
+                </select>
+                <label for="id_venteclient">Client :</label>
+                <select id="id_venteclient" name="client" size="1">
+                    <?php
+                        $db = new PDO('sqlite:bdd/repr.sqlite');
+                        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                        $requete_c = "SELECT NC as id, NOMC || ' de ' || VILLE AS field FROM CLIENTS";
+
+                        $res = $db->query($requete_c);
+                        if ($res){
+                            $tab = $res->fetchAll(PDO::FETCH_ASSOC);
+                            foreach($tab as $val){
+                                echo "<option value=".$val["id"].">".$val["field"]."</option>\n";
+                            }
+                        }
+                    ?>
+                </select>
+                <label for="id_qtvente">Qunatité : </label><input name="qt" id="id_qtvente" required size="20" type="number" min="0"/>
+
             </article>
 
             <input type="submit" value="Insérer"/>
