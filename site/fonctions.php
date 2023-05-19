@@ -104,8 +104,8 @@ function formInsertion(){
             <label for="id_table">Table :</label> 
             <select id="id_table" name="table" size="1" onchange="changeForm(this)">
                 <option value="REPRESENTANTS">représentants</option>
-                <option value="VENTES">ventes</option>
                 <option value="PRODUITS">produits</option>
+                <option value="VENTES">ventes</option>
             </select>
 
             <article class="REPRESENTANTS">
@@ -154,7 +154,24 @@ function formInsertion(){
                         }
                     ?>
                 </select>
-                <label for="id_qtvente">Qunatité : </label><input name="qt" id="id_qtvente" required size="20" type="number" min="0"/>
+                <label for="id_venteproduit">Produit :</label>
+                <select id="id_venteproduit" name="produit" size="1">
+                    <?php
+                        $db = new PDO('sqlite:bdd/repr.sqlite');
+                        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                        $requete_prod = "SELECT NP as id, NOMP || ' ' || COUL || ' (' || PRIX || '€)' AS field FROM PRODUITS";
+
+                        $res = $db->query($requete_prod);
+                        if ($res){
+                            $tab = $res->fetchAll(PDO::FETCH_ASSOC);
+                            foreach($tab as $val){
+                                echo "<option value=".$val["id"].">".$val["field"]."</option>\n";
+                            }
+                        }
+                    ?>
+                </select>
+                <label for="id_qtvente">Quantité : </label><input name="qt" id="id_qtvente" required size="20" type="number" min="0"/>
 
             </article>
 
