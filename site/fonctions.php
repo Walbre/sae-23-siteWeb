@@ -116,11 +116,13 @@ function formInsertion(){
             <article class="VENTES">
                 <label for="id_nomprod">Nom produit : </label><input name="nom" id="id_nomprod" required size="20" />
                 <label for="id_couleurprod">Couleur : </label><input name="couleur" id="id_couleurprod" required size="20" />
-                <label for="id_prixprod">Prix : </label><input name="prix" id="id_prixprod" required size="20" type="number"/>
+                <label for="id_prixprod">Prix : </label><input name="prix" id="id_prixprod" required size="20" type="number" min="0"/>
             </article>
 
             <article class="PRODUITS">
-                
+                <?php
+                    $requete_rep = "SELECT NR as id, NOMR || ' de ' || VILLE AS field FROM REPRESENTANTS"
+                ?>
             </article>
 
             <input type="submit" value="Insérer"/>
