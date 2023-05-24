@@ -113,14 +113,14 @@ function formInsertion(){
             </select>
 
             <article class="REPRESENTANTS">
-                <label for="id_nomr">Nom représentant : </label><input name="nomr" id="id_nomr" required size="20" />
-                <label for="id_viller">Ville représentant : </label><input name="viller" id="id_viller" required size="20" />
+                <label for="id_nomr">Nom représentant : </label><input name="nomr" id="id_nomr" size="20" />
+                <label for="id_viller">Ville représentant : </label><input name="viller" id="id_viller" size="20" />
             </article>
 
             <article class="PRODUITS">
-                <label for="id_nomprod">Nom produit : </label><input name="nom" id="id_nomprod" required size="20" />
-                <label for="id_couleurprod">Couleur : </label><input name="couleur" id="id_couleurprod" required size="20" />
-                <label for="id_prixprod">Prix : </label><input name="prix" id="id_prixprod" required size="20" type="number" min="0"/>
+                <label for="id_nomprod">Nom produit : </label><input name="nom" id="id_nomprod" size="20" />
+                <label for="id_couleurprod">Couleur : </label><input name="couleur" id="id_couleurprod" size="20" />
+                <label for="id_prixprod">Prix : </label><input name="prix" id="id_prixprod" size="20" type="number" min="0"/>
             </article>
 
             <article class="VENTES">
@@ -175,13 +175,13 @@ function formInsertion(){
                         }
                     ?>
                 </select>
-                <label for="id_qtvente">Quantité : </label><input name="qt" id="id_qtvente" required size="20" type="number" min="0"/>
+                <label for="id_qtvente">Quantité : </label><input name="qt" id="id_qtvente" size="20" type="number" min="0"/>
 
             </article>
 
             <article class="CLIENTS">
-                <label for="id_nomclient">Nom Client : </label><input name="nomc" id="id_nomclient" required size="20" />
-                <label for="id_villeclient">Ville du client : </label><input name="villec" id="id_villeclient" required size="20" />
+                <label for="id_nomclient">Nom Client : </label><input name="nomc" id="id_nomclient" size="20" />
+                <label for="id_villeclient">Ville du client : </label><input name="villec" id="id_villeclient" size="20" />
             </article>
 
             <input type="submit" value="Insérer"/>
