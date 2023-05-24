@@ -20,7 +20,7 @@ require "fonctions.php";
         if (!empty($_SESSION) && isset($_SESSION["pseudo"])){
             if (isset($_SESSION["statut"]) && $_SESSION["statut"] === "administrateur"){
 
-                if (!empty($_POST) && isset($_POST["table"]){
+                if (!empty($_POST) && isset($_POST["table"])){
                     if ($_POST["table"] === "CLIENTS"){
                         if (isset($_POST["nomc"]) && isset($_POST["villec"]) && !($_POST["nomc"] === "")){
                             ajoutClient($_POST["nomc"], $_POST["villec"]);
