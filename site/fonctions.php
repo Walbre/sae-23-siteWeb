@@ -208,10 +208,10 @@ function ajoutClient($nom, $ville){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $nom = $db->quote($nom);
-    $ville = $db->quote($ville);
+    $nom = addcslashes($nom);
+    $ville = addcslashes($nom);
 
-    $requete = "INSERT INTO CLIENTS(NOMC, VILLE) VALUES ($nom, $ville)";
+    $requete = "INSERT INTO CLIENTS(NOMC, VILLE) VALUES ('$nom', '$ville')";
 
     $res = $db->exec($requete);
     if (!$res){
