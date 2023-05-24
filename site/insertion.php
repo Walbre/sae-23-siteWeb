@@ -19,6 +19,14 @@ require "fonctions.php";
     <?php
         if (!empty($_SESSION) && isset($_SESSION["pseudo"])){
             if (isset($_SESSION["statut"]) && $_SESSION["statut"] === "administrateur"){
+
+
+                if (!empty($_POST) && isset($_POST["nomc"]) && isset($_POST["villec"])){
+                    if (!($_POST["nomc"] === "")){
+                        ajoutClient($_POST["nomc"], $_POST["villec"]);
+                    }
+                }
+
                 genNavBar($_SESSION["statut"]);
                 echo "<h1>Bienvenue admin</h1>";
                 echo "<section>\n<h2>Inserer un objet</h2>\n</section>";
@@ -41,11 +49,7 @@ require "fonctions.php";
                 affiche_tableau(get_table(""), ["Nom représentant", "Ville représentant", "Nom client", "Ville client", "Nom produit", "Couleur", "Prix", "Quantité"]);
                 echo "</article>\n";
 
-                if (!empty($_POST) && isset($_POST["nomc"]) && isset($_POST["villec"])){
-                    if (!($_POST["nomc"] === "")){
-                        ajoutClient($_POST["nomc"], $_POST["villec"]);
-                    }
-                }
+                
             }
         }
         else{
