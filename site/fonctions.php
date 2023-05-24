@@ -65,6 +65,9 @@ function get_table($qui){
     else if ($qui === "prod"){
         $requete = "SELECT NOMP, COUL, PRIX FROM PRODUITS";
     }
+    else if ($qui === "cli"){
+        $requete = "SELECT NOMC, VILLE FROM CLIENTS";
+    }
     else{
         $requete = "SELECT NOMR,REPRESENTANTS.VILLE, NOMC, CLIENTS.VILLE AS VILLEC, NOMP, COUL, PRIX, QT FROM VENTES INNER JOIN REPRESENTANTS ON REPRESENTANTS.NR = VENTES.NR INNER JOIN CLIENTS ON CLIENTS.NC = VENTES.NC INNER JOIN PRODUITS ON PRODUITS.NP = VENTES.NP";
     }

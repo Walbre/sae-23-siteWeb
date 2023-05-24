@@ -33,6 +33,10 @@ require "fonctions.php";
                 affiche_tableau(get_table("prod"), ["Nom produit", "Couleur", "Prix"]);
                 echo "</article>\n";
 
+                echo "<article>\n<h3>Les clients</h3>\n";
+                affiche_tableau(get_table("clients"), ["Nom client", "Ville"]);
+                echo "</article>\n";
+
                 echo "<article>\n<h3>Tout</h3>\n";
                 affiche_tableau(get_table(""), ["Nom représentant", "Ville représentant", "Nom client", "Ville client", "Nom produit", "Couleur", "Prix", "Quantité"]);
                 echo "</article>\n";
