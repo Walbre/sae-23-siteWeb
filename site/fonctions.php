@@ -220,7 +220,7 @@ function ajoutClient($nom, $ville){
 }
 
 
-function ajouterRepr($nom, $ville){
+function ajoutRepr($nom, $ville){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
