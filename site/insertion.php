@@ -34,7 +34,7 @@ require "fonctions.php";
                 echo "</article>\n";
 
                 echo "<article>\n<h3>Les clients</h3>\n";
-                affiche_tableau(get_table("clients"), ["Nom client", "Ville"]);
+                affiche_tableau(get_table("cli"), ["Nom client", "Ville"]);
                 echo "</article>\n";
 
                 echo "<article>\n<h3>Tout</h3>\n";
