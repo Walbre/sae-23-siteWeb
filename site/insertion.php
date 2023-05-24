@@ -42,7 +42,9 @@ require "fonctions.php";
                 echo "</article>\n";
 
                 if (!empty($_POST) && isset($_POST["nomc"]) && isset($_POST["villec"])){
-                    ajoutClient($_POST["nomc"], $_POST["villec"]);
+                    if (!($_POST["nomc"] === "")){
+                        ajoutClient($_POST["nomc"], $_POST["villec"]);
+                    }
                 }
             }
         }
