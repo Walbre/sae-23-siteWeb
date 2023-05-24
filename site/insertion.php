@@ -34,8 +34,11 @@ require "fonctions.php";
                     }
 
                     else if ($_POST["table"] === "VENTES"){
-                        if (isset($_POST["repr"]) && isset($_POST["client"]) && isset($_POST["produit"]) && isset($_POST["qt"]) && !($_POST["repr"] === "")){
-                            ajoutVente($_POST["repr"], $_POST["client"], $_POST["produit"], $_POST["qt"]);
+                        if (isset($_POST["repr"]) && isset($_POST["client"]) && isset($_POST["produit"]) && isset($_POST["qt"])){
+                            if (!($_POST["repr"] === "") && !($_POST["client"] === "") && !($_POST["produit"] === "") && !($_POST["qt"] === "")){
+                                ajoutVente($_POST["repr"], $_POST["client"], $_POST["produit"], $_POST["qt"]);
+                            }
+                            
                         }
                     }
                 }
