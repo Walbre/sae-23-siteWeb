@@ -218,4 +218,39 @@ function ajoutClient($nom, $ville){
         echo "erreur";
     }
 }
+
+
+function ajouterRepr($nom, $ville){
+    $db = new PDO('sqlite:bdd/repr.sqlite');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $nom = addslashes($nom);
+    $ville = addslashes($nom);
+
+    $requete = "INSERT INTO REPRESENTANTS(NOMR, VILLE) VALUES ('$nom', '$ville')";
+
+    $res = $db->exec($requete);
+    if (!$res){
+        echo "erreur";
+    }
+}
+
+
+function ajoutVente($nr, $nc, $np, $quantite){
+    $db = new PDO('sqlite:bdd/repr.sqlite');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $nr = addslashes($nr);
+    $nc = addslashes($nc);
+    $np= addslashes($np);
+    $quantite = addslashes($quantite);
+
+    $requete = "INSERT INTO CLIENTS(NR, NC, NP, QT) VALUES ('$nr', '$nc', '$np', '$quantite')";
+
+    $res = $db->exec($requete);
+    if (!$res){
+        echo "erreur";
+    }
+}
+
 ?>

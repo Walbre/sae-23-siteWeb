@@ -27,6 +27,18 @@ require "fonctions.php";
                     }
                 }
 
+                else if (!empty($_POST) && isset($_POST["nomr"]) && isset($_POST["viller"])){
+                    if (!($_POST["nomr"] === "")){
+                        ajoutRepr($_POST["nomr"], $_POST["viller"]);
+                    }
+                }
+
+                else if (!empty($_POST) && isset($_POST["repr"]) && isset($_POST["client"]) && isset($_POST["produit"]) && isset($_POST["qt"])){
+                    if (!($_POST["repr"] === "")){
+                        ajoutVente($_POST["repr"], $_POST["client"], $_POST["produit"], $_POST["qt"]);
+                    }
+                }
+
                 genNavBar($_SESSION["statut"]);
                 echo "<h1>Bienvenue admin</h1>";
                 echo "<section>\n<h2>Inserer un objet</h2>\n</section>";
