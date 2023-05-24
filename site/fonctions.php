@@ -245,7 +245,7 @@ function ajoutVente($nr, $nc, $np, $quantite){
     $np= addslashes($np);
     $quantite = addslashes($quantite);
 
-    $requete = "INSERT INTO CLIENTS(NR, NC, NP, QT) VALUES ('$nr', '$nc', '$np', '$quantite')";
+    $requete = "INSERT INTO VENTES(NR, NC, NP, QT) VALUES ('$nr', '$nc', '$np', '$quantite')";
 
     $res = $db->exec($requete);
     if (!$res){
