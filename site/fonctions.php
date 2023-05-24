@@ -106,11 +106,12 @@ function formInsertion(){
                 <option value="REPRESENTANTS">représentants</option>
                 <option value="PRODUITS">produits</option>
                 <option value="VENTES">ventes</option>
+                <option value="CLIENTS">clients</option>
             </select>
 
             <article class="REPRESENTANTS">
-                <label for="id_nomr">Nom représentant : </label><input name="nom" id="id_nomr" required size="20" />
-                <label for="id_viller">Ville représentant : </label><input name="ville" id="id_viller" required size="20" />
+                <label for="id_nomr">Nom représentant : </label><input name="nomr" id="id_nomr" required size="20" />
+                <label for="id_viller">Ville représentant : </label><input name="viller" id="id_viller" required size="20" />
             </article>
 
             <article class="PRODUITS">
@@ -175,12 +176,17 @@ function formInsertion(){
 
             </article>
 
+            <article class="CLIENTS">
+                <label for="id_nomclient">Nom Client : </label><input name="nomc" id="id_nomclient" required size="20" />
+                <label for="id_villeclient">Ville du client : </label><input name="villec" id="id_villeclient" required size="20" />
+            </article>
+
             <input type="submit" value="Insérer"/>
 
         </fieldset>
         <script>
             function changeForm(name){
-                var names = ["REPRESENTANTS", "VENTES", "PRODUITS"]
+                var names = ["REPRESENTANTS", "VENTES", "PRODUITS", "CLIENTS"]
                 names.splice(names.indexOf(name.value), 1)
                 // invisible les autres
                 names.forEach(nom => Array.from(document.getElementsByClassName(nom)).forEach(elem => elem.style.display = 'none'))
