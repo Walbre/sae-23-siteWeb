@@ -20,22 +20,23 @@ require "fonctions.php";
         if (!empty($_SESSION) && isset($_SESSION["pseudo"])){
             if (isset($_SESSION["statut"]) && $_SESSION["statut"] === "administrateur"){
 
-
-                if (!empty($_POST) && isset($_POST["nomc"]) && isset($_POST["villec"])){
-                    if (!($_POST["nomc"] === "")){
-                        ajoutClient($_POST["nomc"], $_POST["villec"]);
+                if (!empty($_POST) && isset($_POST["table"]){
+                    if ($_POST["table"] === "CLIENTS"){
+                        if (isset($_POST["nomc"]) && isset($_POST["villec"]) && !($_POST["nomc"] === "")){
+                            ajoutClient($_POST["nomc"], $_POST["villec"]);
+                        }
                     }
-                }
 
-                else if (!empty($_POST) && isset($_POST["nomr"]) && isset($_POST["viller"])){
-                    if (!($_POST["nomr"] === "")){
-                        ajoutRepr($_POST["nomr"], $_POST["viller"]);
+                    else if ($_POST["table"] === "REPRESENTANTS"){
+                        if (isset($_POST["nomr"]) && isset($_POST["viller"]) && !($_POST["nomr"] === "")){
+                            ajoutRepr($_POST["nomr"], $_POST["viller"]);
+                        }
                     }
-                }
 
-                else if (!empty($_POST) && isset($_POST["repr"]) && isset($_POST["client"]) && isset($_POST["produit"]) && isset($_POST["qt"])){
-                    if (!($_POST["repr"] === "")){
-                        ajoutVente($_POST["repr"], $_POST["client"], $_POST["produit"], $_POST["qt"]);
+                    else if ($_POST["table"] === "VENTES"){
+                        if (isset($_POST["repr"]) && isset($_POST["client"]) && isset($_POST["produit"]) && isset($_POST["qt"]) !($_POST["repr"] === "")){
+                            ajoutVente($_POST["repr"], $_POST["client"], $_POST["produit"], $_POST["qt"]);
+                        }
                     }
                 }
 
