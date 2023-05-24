@@ -211,7 +211,7 @@ function ajoutClient($nom, $ville){
     $nom = $db->quote($nom);
     $ville = $db->quote($ville);
 
-    $requete = "INSERT INTO CLIENTS(NOMC, VILLE) VALUES ($nom, $ville)"
+    $requete = "INSERT INTO CLIENTS(NOMC, VILLE) VALUES ($nom, $ville)";
 
     $res = $db->exec($requete_prod);
     if (!$res){
