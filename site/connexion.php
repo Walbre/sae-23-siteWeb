@@ -17,16 +17,12 @@ if (!empty($_GET) && isset($_GET["action"]) && $_GET["action"]=="logout") {
 				$_SESSION=array();
 			}			
 
-if (!empty($_POST) && isset($_POST['login']) && isset($_POST['pass']) && validate($_POST['pass']))	{	
-	if ((validate($_POST['pass']))) {
+if (!empty($_POST) && isset($_POST['login']) && isset($_POST['pass']) && !(empty(validate($_POST['login'],$_POST['pass']))))	{	
+	
+	$tab = validate($_POST['login'],$_POST['pass']);
 
-		echo "mdp pas valide";
-	}
-
-	else{
-		echo "mdp valide";
-	}
-
+	$_SESSION["pseudo"] = $tab[0];
+	$_SESSION["statut"] = $tab[1];
 
 	/*if ( authentification($_POST["login"],$_POST["pass"]) )		{					
 		$_SESSION["login"]=$_POST["login"];
@@ -41,16 +37,13 @@ if (!empty($_POST) && isset($_POST['login']) && isset($_POST['pass']) && validat
 */
 
 
-?>	
-	    
-<h1>Accueil depuis la page initiale</h1>
-<a href="index.php">Lien vers la section membre</a>		
-<p><a href="connexion.php?action=logout">Se déconnecter</a></p>
-	    
-<?php			
-				
+
+	echo '<script>document.location.replace("index.php")</script>';
+	    			
+
 	
 }
+
 			
 
 if (empty($_SESSION)){
@@ -61,7 +54,8 @@ if (empty($_SESSION)){
 	<form id="cnx" method="post" action="connexion.php">
 		<p><label for="login">Login : </label><input type="text" id="login" name="login" /></p>
 		<p><label for="pass">Mot de Passe : </label><input type="password" id="pass" name="pass" /></p>
-		<p><input type="submit" id="submit" name="submit" value="Connexion" /></p>
+		<p><input type="submit" id="submit" name="submit" value="Connexion" />  <input type="submit" id="register" name="register" value="Register" /></p>
+		
 	</form>
 <?php
 }
