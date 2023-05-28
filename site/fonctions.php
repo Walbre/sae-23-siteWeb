@@ -80,6 +80,9 @@ function get_table($qui){
     }
 }
 
+
+
+
 function affiche_tableau($tableau, $head){
     echo "<table>\n";
     echo "<thead>\n<tr>\n";
@@ -209,7 +212,7 @@ function ajoutClient($nom, $ville){
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $nom = addslashes($nom);
-    $ville = addslashes($nom);
+    $ville = addslashes($ville);
 
     $requete = "INSERT INTO CLIENTS(NOMC, VILLE) VALUES ('$nom', '$ville')";
 
@@ -225,9 +228,26 @@ function ajoutRepr($nom, $ville){
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $nom = addslashes($nom);
-    $ville = addslashes($nom);
+    $ville = addslashes($ville);
 
     $requete = "INSERT INTO REPRESENTANTS(NOMR, VILLE) VALUES ('$nom', '$ville')";
+
+    $res = $db->exec($requete);
+    if (!$res){
+        echo "erreur";
+    }
+}
+
+
+function ajoutProduit($nom, $couleur, $prix){
+    $db = new PDO('sqlite:bdd/repr.sqlite');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $nom = addslashes($nom);
+    $couleur = addslashes($couleur);
+    $prix = addslashes($prix);
+
+    $requete = "INSERT INTO PRODUITS(NOMP, COUL, PRIX) VALUES ('$nom', '$couleur', '$prix')";
 
     $res = $db->exec($requete);
     if (!$res){
@@ -253,4 +273,122 @@ function ajoutVente($nr, $nc, $np, $quantite){
     }
 }
 
+
+
+function get_table_with_id($qui){
+
+    $db = new PDO('sqlite:bdd/repr.sqlite');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    if ($qui === "repr"){
+        $requete = "SELECT NR, NOMR, VILLE FROM REPRESENTANTS";
+    }
+    else if ($qui === "prod"){
+        $requete = "SELECT NP, NOMP, COUL, PRIX FROM PRODUITS";
+    }
+    else if ($qui === "cli"){
+        $requete = "SELECT NC, NOMC, VILLE FROM CLIENTS";
+    }
+    else{
+        $requete = "SELECT VENTES.NR, VENTES.NP, VENTES.NC, NOMR,REPRESENTANTS.VILLE, NOMC, CLIENTS.VILLE AS VILLEC, NOMP, COUL, PRIX, QT FROM VENTES INNER JOIN REPRESENTANTS ON REPRESENTANTS.NR = VENTES.NR INNER JOIN CLIENTS ON CLIENTS.NC = VENTES.NC INNER JOIN PRODUITS ON PRODUITS.NP = VENTES.NP";
+    }
+
+
+    $res = $db->query($requete);
+    if ($res){
+        $tab = $res->fetchAll(PDO::FETCH_ASSOC);
+        return $tab;
+    }
+}
+
+
+
+function formSupression(){
+
+    ?>
+    
+    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+        <fieldset>
+            <label for="id_table">Table :</label> 
+            <select id="id_table" name="table" size="1" onchange="changeForm(this)">
+                <option value="REPRESENTANTS">représentants</option>
+                <option value="PRODUITS">produits</option>
+                <option value="VENTES">ventes</option>
+                <option value="CLIENTS">clients</option>
+            </select>
+
+            <article class="REPRESENTANTS">
+                <label for="id_repr">Représentant :</label>
+                <select id="id_repr" name="repr" size="1">
+                <?php
+                    $data = get_table_with_id("repr");
+                    foreach ($data as $val){
+                        echo "<option value=".$val["NR"].'">'.$val["NOMR"].' de '.$val["VILLE"].'</option>';
+                    }
+
+                ?>
+                </select>
+            </article>
+
+            <article class="PRODUITS">
+                <label for="id_prod">Produit : </label>
+                <select id="id_prod" name="repr" size="1">
+                <?php
+                    $data = get_table_with_id("prod");
+                    foreach ($data as $val){
+                        echo "<option value=".$val["NP"].'">'.$val["NOMP"].' '.$val["COUL"].' ('.$val["PRIX"].'€)'.'</option>';
+                    }
+
+                ?>
+                </select>
+            </article>
+
+            <article class="VENTES">
+                <label for="id_venter">Représentant :</label>
+                <select id="id_vente" name="vente" size="1">
+                    <?php
+                    $data = get_table_with_id("");
+                    foreach ($data as $val){
+                        echo "<option value=".$val["NR"].','.$val["NP"].','.$val["NR"].'">'.$val["NOMR"].' de '.$val["VILLE"].' -> '.$val["NOMC"].' de '.$val["VILLEC"].' : '.$val["NOMP"].' '.$val["COUL"].' ('.$val["PRIX"].'€) x '.$val["QT"].'</option>';
+                    }
+                    ?>
+                </select>
+
+            </article>
+
+            <article class="CLIENTS">
+            <label for="id_client">Client : </label>
+                <select id="id_client" name="client" size="1">
+                <?php
+                    $data = get_table_with_id("cli");
+                    foreach ($data as $val){
+                        echo "<option value=".$val["NC"].'">'.$val["NOMC"].' '.$val["VILLE"].'</option>';
+                    }
+
+                ?>
+                </select>
+            </article>
+
+            <input type="submit" value="Insérer"/>
+
+        </fieldset>
+        <script>
+            function changeForm(name){
+                var names = ["REPRESENTANTS", "VENTES", "PRODUITS", "CLIENTS"]
+                names.splice(names.indexOf(name.value), 1)
+                // invisible les autres
+                names.forEach(nom => Array.from(document.getElementsByClassName(nom)).forEach(elem => elem.style.display = 'none'))
+                Array.from(document.getElementsByClassName(name.value)).forEach(elem => elem.style.display = 'block')
+            }
+            changeForm(document.getElementById('id_table'))
+        </script>
+
+<?php
+
+}
+
+
 ?>
+
+
+
