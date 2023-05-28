@@ -391,7 +391,7 @@ function formSupression(){
                     <?php
                     $data = get_table_with_id("");
                     foreach ($data as $val){
-                        echo "<option value=".$val["NR"].','.$val["NP"].','.$val["NR"].'>'.$val["NOMR"].' de '.$val["VILLE"].' -> '.$val["NOMC"].' de '.$val["VILLEC"].' : '.$val["NOMP"].' '.$val["COUL"].' ('.$val["PRIX"].'€) x '.$val["QT"].'</option>';
+                        echo "<option value=".$val["NR"].','.$val["NC"].','.$val["NP"].'>'.$val["NOMR"].' de '.$val["VILLE"].' -> '.$val["NOMC"].' de '.$val["VILLEC"].' : '.$val["NOMP"].' '.$val["COUL"].' ('.$val["PRIX"].'€) x '.$val["QT"].'</option>';
                     }
                     ?>
                 </select>
@@ -491,8 +491,66 @@ function supprimerVente($nr, $nc, $np){
 }
 
 
+function genSearchBar(){
+
+    ?>
+
+    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="get">
+        <fieldset>
+            <label for="id_searchbar">Rechercher : </label>
+            <input type="text" id="id_searchbar" name="search" placeholder="search" required>
+            <input type="submit" value="Rechercher"/>
+        </fieldset>
+    </form>
+
+    <?php
+}
+
+function getSearch($val){
+    $db = new PDO('sqlite:bdd/repr.sqlite');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $val = addslashes($val);
+
+    $requete = "SELECT v.NR, v.NP, v.NC, NOMR,r.VILLE, NOMC, c.VILLE AS VILLEC, NOMP, COUL, PRIX, QT FROM VENTES v INNER JOIN REPRESENTANTS r ON r.NR = v.NR INNER JOIN CLIENTS c ON c.NC = v.NC INNER JOIN PRODUITS p ON p.NP = v.NP WHERE c.VILLE LIKE '%$val%' OR NOMC LIKE '%$val%' OR r.VILLE LIKE '%$val%' OR NOMR LIKE '%$val%' OR COUL LIKE '%$val%' OR NOMP LIKE '%$val%'";
+
+    $res = $db->query($requete);
+    if ($res){
+        $tab = $res->fetchAll(PDO::FETCH_ASSOC);
+        return $tab;
+    }
+}
 
 
+function afficheLien($tab){
+    foreach($tab as $vals){
+        echo '<a href="index.php?page='.$vals["NR"].$vals["NC"].$vals["NP"].'">'.$vals["NOMR"].' de '.$vals["VILLE"].' vend a '.$vals["NOMC"].' de '.$vals["VILLEC"].' -> '.$vals["NOMP"].' '.$vals["COUL"].' ('.$vals["PRIX"].'€) x '.$vals["QT"].'</a>';
+        echo "</br>";
+    }
+}
+
+function getPage($id){
+    $db = new PDO('sqlite:bdd/repr.sqlite');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+
+    $nr = addslashes($id[0]);
+    $nc = addslashes($id[1]);
+    $np = addslashes($id[2]);
+
+    $requete = "SELECT NOMR,r.VILLE, NOMC, c.VILLE AS VILLEC, NOMP, COUL, PRIX, QT FROM VENTES v INNER JOIN REPRESENTANTS r ON r.NR = v.NR INNER JOIN CLIENTS c ON c.NC = v.NC INNER JOIN PRODUITS p ON p.NP = v.NP WHERE v.NR='$nr' AND v.NC='$nc' AND v.NP='$np'";
+    
+    $res = $db->query($requete);
+    if ($res){
+        $tab = $res->fetchAll(PDO::FETCH_ASSOC);
+        if (sizeof($tab) === 1){
+            echo "Representant : ".$tab[0]["NOMR"].' de '.$tab[0]["VILLE"].'</br>';
+            echo "Client : ".$tab[0]["NOMC"].' de '.$tab[0]["VILLEC"].'</br>';
+            echo "Achat : ".$tab[0]["NOMP"].' '.$tab[0]["COUL"].' ('.$tab[0]["PRIX"].'€)</br>';
+            echo "Nombre : ".$tab[0]["QT"].'</br>';
+        }
+    }
+}
 
 
 ?>

@@ -20,6 +20,19 @@ require "fonctions.php";
     <?php
     if (isset($_SESSION) && isset($_SESSION["pseudo"])){
         genNavBar($_SESSION["statut"]);
+        genSearchBar();
+        if (!empty($_GET)){
+            if (isset($_GET["search"])){
+                echo "Recherche : ".htmlspecialchars($_GET["search"]);
+                $rep = getSearch($_GET["search"]);
+                echo '</br>';
+                afficheLien($rep);
+            }
+            elseif(isset($_GET["page"])){
+                getPage($_GET["page"]);
+            }
+        }
+
     }
     else{
         redirect("connexion.php", null);
