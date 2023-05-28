@@ -13,6 +13,7 @@ require "fonctions.php";
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <title>Insertion</title>
 </head>
 <body>
@@ -52,24 +53,26 @@ require "fonctions.php";
                 }
 
                 genNavBar($_SESSION["statut"]);
-                echo "<h1>Bienvenue admin</h1>";
-                echo "<section>\n<h2>Inserer un objet</h2>\n</section>";
-                echo "<section>\n<h2>Tables</h2>\n</section>";
+                echo '<h1 class="display-5 fw-bold text-center">Bienvenue '.$_SESSION["pseudo"].'</h1>';
+                echo '<h2 class="display-5 text-center">Page d\'insertion d\'objets</h2>';
+                
+                echo '<section id="section_tables">'."\n".'<h3 class="fw-bold">Tables</h3>'."\n";
                 formInsertion();
+                echo "</section>";
 
-                echo "<article>\n<h3>Les représentants</h3>\n";
+                echo "<article>\n<h4>Les représentants</h4>\n";
                 affiche_tableau(get_table("repr"), ["Nom représentant", "Ville"]);
                 echo "</article>\n";
 
-                echo "<article>\n<h3>Les produits</h3>\n";
+                echo "<article>\n<h4>Les produits</h4>\n";
                 affiche_tableau(get_table("prod"), ["Nom produit", "Couleur", "Prix"]);
                 echo "</article>\n";
 
-                echo "<article>\n<h3>Les clients</h3>\n";
+                echo "<article>\n<h4>Les clients</h4>\n";
                 affiche_tableau(get_table("cli"), ["Nom client", "Ville"]);
                 echo "</article>\n";
 
-                echo "<article>\n<h3>Tout</h3>\n";
+                echo "<article>\n<h4>Tout</h4>\n";
                 affiche_tableau(get_table(""), ["Nom représentant", "Ville représentant", "Nom client", "Ville client", "Nom produit", "Couleur", "Prix", "Quantité"]);
                 echo "</article>\n";
 
@@ -81,5 +84,6 @@ require "fonctions.php";
         }
         
     ?>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>
 </html>

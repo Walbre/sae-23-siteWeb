@@ -10,24 +10,54 @@ session_start();
 function genNavBar($statut){
 
     ?>
-    
-    <ul>
-        <li><a href="index.php">index</a></li>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <!-- Bouton de la navabr en mode réduit -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="index.php">Accueil</a>
+                    </li>
+                    
+                
 
     <?php
 
-    if ($statut === "administrateur"){
-        ?>
-            <li><a href="insertion.php">insertion</a></li>
-            <li><a href="modification.php">modification</a></li>
-            <li><a href="suppression.php">suppression</a></li>
+                if ($statut === "administrateur"){
+                    ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="insertion.php">Insertion</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="modification.php">Modification</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="suppression.php">Suppression</a>
+                    </li>
 
-        <?php
-    }
+                    <?php
+                }
+                    ?>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown09" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Français</a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdown09">
+                            <li><a class="dropdown-item" href="#">English</a></li>
+                            <li><a class="dropdown-item" href="#">Francais</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="deconnexion.php">deconnexion</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-    echo '<li>langue</li>';
-    echo '<li><a href="deconnexion.php">deconnexion</a></li>';
-    echo '</ul>';
+    <?php
 
 }
 
@@ -498,7 +528,7 @@ function genSearchBar(){
     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="get">
         <fieldset>
             <label for="id_searchbar">Rechercher : </label>
-            <input type="text" id="id_searchbar" name="search" placeholder="search" required>
+            <input type="text" id="id_searchbar" name="search" placeholder="search">
             <input type="submit" value="Rechercher"/>
         </fieldset>
     </form>
