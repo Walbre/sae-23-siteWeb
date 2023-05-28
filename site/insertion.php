@@ -41,6 +41,14 @@ require "fonctions.php";
                             
                         }
                     }
+                    else if ($_POST["table"] === "PRODUITS"){
+                        if (isset($_POST["nom"]) && isset($_POST["couleur"]) && isset($_POST["prix"])){
+                            if (!($_POST["nom"] === "") && !($_POST["couleur"] === "") && !($_POST["prix"] === "")){
+                                ajoutProduit($_POST["nom"], $_POST["couleur"], $_POST["prix"]);
+                            }
+                            
+                        }
+                    }
                 }
 
                 genNavBar($_SESSION["statut"]);
