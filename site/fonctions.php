@@ -365,7 +365,7 @@ function formSupression(){
                 <?php
                     $data = get_table_with_id("repr");
                     foreach ($data as $val){
-                        echo "<option value=".$val["NR"].'">'.$val["NOMR"].' de '.$val["VILLE"].'</option>';
+                        echo "<option value=".$val["NR"].'>'.$val["NOMR"].' de '.$val["VILLE"].'</option>';
                     }
 
                 ?>
@@ -374,11 +374,11 @@ function formSupression(){
 
             <article class="PRODUITS">
                 <label for="id_prod">Produit : </label>
-                <select id="id_prod" name="repr" size="1">
+                <select id="id_prod" name="prod" size="1">
                 <?php
                     $data = get_table_with_id("prod");
                     foreach ($data as $val){
-                        echo "<option value=".$val["NP"].'">'.$val["NOMP"].' '.$val["COUL"].' ('.$val["PRIX"].'€)'.'</option>';
+                        echo "<option value=".$val["NP"].'>'.$val["NOMP"].' '.$val["COUL"].' ('.$val["PRIX"].'€)'.'</option>';
                     }
 
                 ?>
@@ -391,7 +391,7 @@ function formSupression(){
                     <?php
                     $data = get_table_with_id("");
                     foreach ($data as $val){
-                        echo "<option value=".$val["NR"].','.$val["NP"].','.$val["NR"].'">'.$val["NOMR"].' de '.$val["VILLE"].' -> '.$val["NOMC"].' de '.$val["VILLEC"].' : '.$val["NOMP"].' '.$val["COUL"].' ('.$val["PRIX"].'€) x '.$val["QT"].'</option>';
+                        echo "<option value=".$val["NR"].','.$val["NP"].','.$val["NR"].'>'.$val["NOMR"].' de '.$val["VILLE"].' -> '.$val["NOMC"].' de '.$val["VILLEC"].' : '.$val["NOMP"].' '.$val["COUL"].' ('.$val["PRIX"].'€) x '.$val["QT"].'</option>';
                     }
                     ?>
                 </select>
@@ -404,14 +404,14 @@ function formSupression(){
                 <?php
                     $data = get_table_with_id("cli");
                     foreach ($data as $val){
-                        echo "<option value=".$val["NC"].'">'.$val["NOMC"].' '.$val["VILLE"].'</option>';
+                        echo "<option value=".$val["NC"].'>'.$val["NOMC"].' '.$val["VILLE"].'</option>';
                     }
 
                 ?>
                 </select>
             </article>
 
-            <input type="submit" value="Insérer"/>
+            <input type="submit" value="Supprimer"/>
 
         </fieldset>
         <script>
@@ -428,6 +428,71 @@ function formSupression(){
 <?php
 
 }
+
+function supprimerClient($nc){
+    $db = new PDO('sqlite:bdd/repr.sqlite');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $nc = addslashes($nc);
+
+    $requete = "DELETE FROM CLIENTS WHERE nc='$nc'";
+
+    $res = $db->exec($requete);
+    if (!$res){
+        echo "erreur";
+    }
+}
+
+
+function supprimerRepr($nr){
+    $db = new PDO('sqlite:bdd/repr.sqlite');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $nr = addslashes($nr);
+
+    $requete = "DELETE FROM REPRESENTANTS WHERE nr='$nr'";
+
+    $res = $db->exec($requete);
+    if (!$res){
+        echo "erreur";
+    }
+}
+
+
+function supprimerProduit($np){
+    $db = new PDO('sqlite:bdd/repr.sqlite');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $np = addslashes($np);
+
+    $requete = "DELETE FROM PRODUITS WHERE np='$np'";
+
+    $res = $db->exec($requete);
+    if (!$res){
+        echo "erreur";
+    }
+}
+
+
+function supprimerVente($nr, $nc, $np){
+    $db = new PDO('sqlite:bdd/repr.sqlite');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $nr = addslashes($nr);
+    $nc = addslashes($nc);
+    $np= addslashes($np);
+
+    $requete = "DELETE FROM VENTES WHERE nc='$nc' AND np='$np' AND nr='$nr'";
+
+    $res = $db->exec($requete);
+    if (!$res){
+        echo "erreur";
+    }
+}
+
+
+
+
 
 
 ?>

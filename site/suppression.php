@@ -20,7 +20,33 @@ require "fonctions.php";
         if (!empty($_SESSION) && isset($_SESSION["pseudo"])){
             if (isset($_SESSION["statut"]) && $_SESSION["statut"] === "administrateur"){
 
+                if (!empty($_POST) && isset($_POST["table"])){
+                    if ($_POST["table"] === "CLIENTS"){
+                        if (isset($_POST["client"]) && !($_POST["client"] === "")){
+                            supprimerClient($_POST["client"]);
+                        }
+                    }
 
+                    else if ($_POST["table"] === "REPRESENTANTS"){
+                        if (isset($_POST["repr"]) && !($_POST["repr"] === "")){
+                            supprimerRepr($_POST["repr"]);
+                        }
+                    }
+
+                    else if ($_POST["table"] === "VENTES"){
+                        if (isset($_POST["vente"]) && !($_POST["vente"] === "")){
+                            $array_ventes = explode(",", $_POST["vente"]);
+                            if (sizeof($array_ventes) === 3){
+                                supprimerVente($array_ventes[0], $array_ventes[1], $array_ventes[2]);
+                            }
+                        }
+                    }
+                    else if ($_POST["table"] === "PRODUITS"){
+                        if (isset($_POST["prod"]) && !($_POST["prod"] === "")){
+                            supprimerProduit($_POST["prod"]);
+                        }
+                    }
+                }
 
                 genNavBar($_SESSION["statut"]);
                 echo "<h1>Bienvenue admin</h1>";
