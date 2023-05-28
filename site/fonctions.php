@@ -37,6 +37,48 @@ function logout(){
     $_SESSION = array();
 }
 
+
+function validate($login, $pass){
+
+    $login = addslashes($login);
+    $pass = addslashes($pass);
+
+    $valide = array();
+    
+
+    $dbc = new PDO('sqlite:bdd/comptes.sqlite');
+    $dbc->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+
+    $requete = "SELECT * FROM comptes;";
+
+
+    $res = $dbc->query($requete);
+    $comptes = $res->fetchAll(PDO::FETCH_ASSOC);
+
+    if (!(empty($login) && empty($pass))){
+        foreach($comptes as $compte){
+            if ($compte["login"] === $login && $compte["motdepasse"] === $pass) {
+
+                $requete_status = "SELECT * FROM comptes WHERE login = '$login' AND motdepasse = '$pass'";
+                $res = $dbc->query($requete_status);
+                $tab_login = $res->fetchAll(PDO::FETCH_ASSOC);
+
+                if ($tab_login[0]["statut"] === "administrateur"){
+
+                    array_push($valide, $login, $tab_login[0]["statut"]);
+                }
+                else{
+                    array_push($valide, $login, $tab_login[0]["statut"]);  
+                }
+            }
+        }
+        
+    }
+
+    return $valide;
+}
+
 function genCaptchat(){
     $url = "http://20.216.129.46/getcaptchat";
     $contents = file_get_contents($url);
