@@ -524,15 +524,18 @@ function supprimerVente($nr, $nc, $np){
 function genSearchBar(){
 
     ?>
-
-    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="get">
-        <fieldset>
-            <label for="id_searchbar">Rechercher : </label>
-            <input type="text" id="id_searchbar" name="search" placeholder="search">
-            <input type="submit" value="Rechercher"/>
-        </fieldset>
-    </form>
-
+    <div class="row justify-content-center">
+        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="get" class="col-8">
+            <div class="input-group mb-3">
+                <input type="text" name="search" class="form-control" placeholder="rechercher" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-outline-secondary" type="button">Rechercher</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    
     <?php
 }
 
