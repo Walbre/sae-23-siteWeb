@@ -90,7 +90,7 @@ require "fonctions.php";
                 echo "</section>";
 
 
-                echo '<div/>';
+                echo '</div>';
             }
             else{
                 echo '<script>window.location = "index.php"</script>';
