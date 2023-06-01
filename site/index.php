@@ -26,7 +26,7 @@ require "fonctions.php";
         genSearchBar();
         if (!empty($_GET)){
             if (isset($_GET["search"])){
-                echo "Recherche : ".htmlspecialchars($_GET["search"]);
+                echo '<h2 class="display-5 fw-bold text-center">Recherche : '.htmlspecialchars($_GET["search"]).'</h2>';
                 $rep = getSearch($_GET["search"]);
                 echo '</br>';
                 afficheLien($rep);

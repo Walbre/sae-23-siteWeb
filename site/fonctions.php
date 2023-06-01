@@ -543,23 +543,75 @@ function getSearch($val){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $val = addslashes($val);
+    $val = "%$val%";
+    $requete = "SELECT v.NR, v.NP, v.NC, NOMR,r.VILLE, NOMC, c.VILLE AS VILLEC, NOMP, COUL, PRIX, QT FROM VENTES v INNER JOIN REPRESENTANTS r ON r.NR = v.NR INNER JOIN CLIENTS c ON c.NC = v.NC INNER JOIN PRODUITS p ON p.NP = v.NP WHERE c.VILLE LIKE :val OR NOMC LIKE :val OR r.VILLE LIKE :val OR NOMR LIKE :val OR COUL LIKE :val OR NOMP LIKE :val";
 
-    $requete = "SELECT v.NR, v.NP, v.NC, NOMR,r.VILLE, NOMC, c.VILLE AS VILLEC, NOMP, COUL, PRIX, QT FROM VENTES v INNER JOIN REPRESENTANTS r ON r.NR = v.NR INNER JOIN CLIENTS c ON c.NC = v.NC INNER JOIN PRODUITS p ON p.NP = v.NP WHERE c.VILLE LIKE '%$val%' OR NOMC LIKE '%$val%' OR r.VILLE LIKE '%$val%' OR NOMR LIKE '%$val%' OR COUL LIKE '%$val%' OR NOMP LIKE '%$val%'";
+    $statement = $db->prepare($requete);
 
-    $res = $db->query($requete);
-    if ($res){
-        $tab = $res->fetchAll(PDO::FETCH_ASSOC);
+    $statement->bindValue(':val', $val, PDO::PARAM_STR);
+
+    $statement->execute();
+    if ($statement){
+        $tab = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $tab;
     }
 }
 
 
 function afficheLien($tab){
+    ?>
+
+    <table class="table" id="id_table">
+    <thead>
+        <tr>
+        <th scope="col" onclick="trier(this)">#</th>
+        <th scope="col" onclick="trier(this)">Client</th>
+        <th scope="col" onclick="trier(this)">Vendeur</th>
+        <th scope="col" onclick="trier(this)">Produit</th>
+        <th scope="col" onclick="trier(this)">Quantité</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    <?php
+    $i = 1;
     foreach($tab as $vals){
-        echo '<a href="index.php?page='.$vals["NR"].$vals["NC"].$vals["NP"].'">'.$vals["NOMR"].' de '.$vals["VILLE"].' vend a '.$vals["NOMC"].' de '.$vals["VILLEC"].' -> '.$vals["NOMP"].' '.$vals["COUL"].' ('.$vals["PRIX"].'€) x '.$vals["QT"].'</a>';
-        echo "</br>";
+        echo '<tr onclick="'."window.location='"."index.php?page=".$vals["NR"].$vals["NC"].$vals["NP"]."'".'">'."\n".'<td scope="row">'."$i"."</td>\n";
+        echo '<td>'.$vals["NOMR"].' de '.$vals["VILLE"]."</td>\n<td>".$vals["NOMC"].' de '.$vals["VILLEC"]."</td>\n<td>".$vals["NOMP"].' '.$vals["COUL"].' ('.$vals["PRIX"]."€)</td>\n<td>".$vals["QT"]."</td>\n";
+        echo "</tr>\n";
+        $i += 1;
     }
+
+    ?>
+    </tbody>
+    </table>
+
+    <script>
+        function trier(colonne_ref){
+            // lignes de la table
+            var tr = document.getElementById("id_table").getElementsByTagName("tbody")[0].getElementsByTagName("tr")
+            var table = []
+            Array.from(tr).forEach(elem => table.push(elem.getElementsByTagName("td")))
+            // recuperer l'ordre des head
+            var order = []
+            Array.from(document.getElementById("id_table").getElementsByTagName("thead")[0].getElementsByTagName("th")).forEach(elem => order.push(elem.innerHTML))
+            // indice de tri
+            var index = order.indexOf(colonne_ref.innerHTML)
+            //tri de la liste
+            var table_sort = []
+            Array.from(tr).forEach(elem => table_sort.push(Array.from(elem.getElementsByTagName("td")).map(function(elem){return elem.innerHTML})))
+            table_sort.sort((a, b) => (a[index].localeCompare(b[index])))
+
+            for (i = 0; i < table.length; i++){
+                for (j = 0; j < table[0].length; j++){
+                    
+                    table[i][j].innerHTML = table_sort[i][j]
+                }
+            }
+        }
+    </script>
+
+    <?php
 }
 
 function getPage($id){
