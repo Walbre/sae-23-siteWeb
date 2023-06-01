@@ -32,7 +32,10 @@ require "fonctions.php";
                 afficheLien($rep);
             }
             elseif(isset($_GET["page"])){
+                echo '<h1 class="display-5 fw-bold text-center">Récapitulatif de la vente</h1>';
+                echo '<div class="text-center h3">';
                 getPage($_GET["page"]);
+                echo '</div>';
             }
         }
 
@@ -43,6 +46,8 @@ require "fonctions.php";
     ?>
 
     </div>
+
+    <?php genFooter(); ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>

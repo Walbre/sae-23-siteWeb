@@ -49,27 +49,48 @@ require "fonctions.php";
                     }
                 }
 
+
                 genNavBar($_SESSION["statut"]);
-                echo "<h1>Bienvenue admin</h1>";
-                echo "<section>\n<h2>Suprimez un objet</h2>\n</section>";
-                echo "<section>\n<h2>Tables</h2>\n</section>";
+
+
+                echo '<div class="container">';
+
+                echo '<h1 class="display-5 fw-bold text-center">Bienvenue '.$_SESSION["pseudo"].'</h1>';
+                echo '<h2 class="display-5 text-center">Page de suppression d\'objets</h2>';
+                
+
+                echo '<section id="section_formulaire" class="row justify-content-center mb-3">'."\n";
+                echo '<div class="col-4">';
+
+                echo '<h3 class="fw-bold text-center">Formulaire</h3>'."\n";
                 formSupression();
 
-                echo "<article>\n<h3>Les représentants</h3>\n";
+                echo '</div>';
+                echo "</section>";
+                
+
+                echo '<section id="section_tables" class="text-center">'."\n".'<h3 class="fw-bold">Tables</h3>'."\n";
+
+                echo "<article>\n<h4>Les représentants</h4>\n";
                 affiche_tableau(get_table("repr"), ["Nom représentant", "Ville"]);
                 echo "</article>\n";
 
-                echo "<article>\n<h3>Les produits</h3>\n";
+                echo "<article>\n<h4>Les produits</h4>\n";
                 affiche_tableau(get_table("prod"), ["Nom produit", "Couleur", "Prix"]);
                 echo "</article>\n";
 
-                echo "<article>\n<h3>Les clients</h3>\n";
+                echo "<article>\n<h4>Les clients</h4>\n";
                 affiche_tableau(get_table("cli"), ["Nom client", "Ville"]);
                 echo "</article>\n";
 
-                echo "<article>\n<h3>Tout</h3>\n";
+                echo "<article>\n<h4>Tout</h4>\n";
                 affiche_tableau(get_table(""), ["Nom représentant", "Ville représentant", "Nom client", "Ville client", "Nom produit", "Couleur", "Prix", "Quantité"]);
                 echo "</article>\n";
+
+                echo "</section>";
+
+
+                echo '<div/>';
             }
             else{
                 echo '<script>window.location = "index.php"</script>';

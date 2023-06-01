@@ -53,12 +53,24 @@ require "fonctions.php";
                 }
 
                 genNavBar($_SESSION["statut"]);
+                
+                echo '<div class="container">';
+
                 echo '<h1 class="display-5 fw-bold text-center">Bienvenue '.$_SESSION["pseudo"].'</h1>';
                 echo '<h2 class="display-5 text-center">Page d\'insertion d\'objets</h2>';
                 
-                echo '<section id="section_tables">'."\n".'<h3 class="fw-bold">Tables</h3>'."\n";
+
+                echo '<section id="section_formulaire" class="row justify-content-center mb-3">'."\n";
+                echo '<div class="col-4">';
+
+                echo '<h3 class="fw-bold text-center">Formulaire</h3>'."\n";
                 formInsertion();
+
+                echo '</div>';
                 echo "</section>";
+
+
+                echo '<section id="section_tables" class="text-center">'."\n".'<h3 class="fw-bold">Tables</h3>'."\n";
 
                 echo "<article>\n<h4>Les représentants</h4>\n";
                 affiche_tableau(get_table("repr"), ["Nom représentant", "Ville"]);
@@ -76,7 +88,9 @@ require "fonctions.php";
                 affiche_tableau(get_table(""), ["Nom représentant", "Ville représentant", "Nom client", "Ville client", "Nom produit", "Couleur", "Prix", "Quantité"]);
                 echo "</article>\n";
 
-                
+                echo "</section>";
+
+                echo '</div>';
             }
         }
         else{

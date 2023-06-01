@@ -156,17 +156,17 @@ function get_table($qui){
 
 
 function affiche_tableau($tableau, $head){
-    echo "<table>\n";
+    echo '<table class="table"'.">\n";
     echo "<thead>\n<tr>\n";
     foreach ($head as $cle){
-        echo "<th>$cle</th>";
+        echo '<th scope="col">'.$cle."</th>";
     }
     echo "</tr>\n</thead>\n";
     echo "<tbody>\n";
     foreach($tableau as $tab){
         echo "<tr>";
         foreach($tab as $sous_tab){
-            echo "<td>$sous_tab</td>";
+            echo '<td scope="row">'.$sous_tab."</td>";
         }
         echo "</tr>\n";
     }
@@ -177,30 +177,34 @@ function affiche_tableau($tableau, $head){
 function formInsertion(){
     ?>
 
-    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-group">
         <fieldset>
             <label for="id_table">Table :</label> 
-            <select id="id_table" name="table" size="1" onchange="changeForm(this)">
+            <select id="id_table" name="table" size="1" class="form-control" onchange="changeForm(this)">
                 <option value="REPRESENTANTS">représentants</option>
                 <option value="PRODUITS">produits</option>
                 <option value="VENTES">ventes</option>
                 <option value="CLIENTS">clients</option>
             </select>
 
+            <br>
+
             <article class="REPRESENTANTS">
-                <label for="id_nomr">Nom représentant : </label><input name="nomr" id="id_nomr" size="20" />
-                <label for="id_viller">Ville représentant : </label><input name="viller" id="id_viller" size="20" />
+                <label for="id_nomr">Nom représentant : </label><input name="nomr" id="id_nomr" size="20" class="form-control"/>
+                <label for="id_viller">Ville représentant : </label><input name="viller" id="id_viller" size="20" class="form-control"/>
             </article>
 
+
             <article class="PRODUITS">
-                <label for="id_nomprod">Nom produit : </label><input name="nom" id="id_nomprod" size="20" />
-                <label for="id_couleurprod">Couleur : </label><input name="couleur" id="id_couleurprod" size="20" />
-                <label for="id_prixprod">Prix : </label><input name="prix" id="id_prixprod" size="20" type="number" min="0"/>
+                <label for="id_nomprod">Nom produit : </label><input name="nom" id="id_nomprod" size="20" class="form-control"/>
+                <label for="id_couleurprod">Couleur : </label><input name="couleur" id="id_couleurprod" size="20" class="form-control"/>
+                <label for="id_prixprod">Prix : </label><input name="prix" id="id_prixprod" size="20" type="number" min="0" class="form-control"/>
             </article>
+
 
             <article class="VENTES">
                 <label for="id_venterepr">Représentant :</label>
-                <select id="id_venterepr" name="repr" size="1">
+                <select id="id_venterepr" name="repr" size="1" class="form-control">
                     <?php
                         $db = new PDO('sqlite:bdd/repr.sqlite');
                         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -217,7 +221,7 @@ function formInsertion(){
                     ?>
                 </select>
                 <label for="id_venteclient">Client :</label>
-                <select id="id_venteclient" name="client" size="1">
+                <select id="id_venteclient" name="client" size="1" class="form-control">
                     <?php
                         $db = new PDO('sqlite:bdd/repr.sqlite');
                         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -234,7 +238,7 @@ function formInsertion(){
                     ?>
                 </select>
                 <label for="id_venteproduit">Produit :</label>
-                <select id="id_venteproduit" name="produit" size="1">
+                <select id="id_venteproduit" name="produit" size="1" class="form-control">
                     <?php
                         $db = new PDO('sqlite:bdd/repr.sqlite');
                         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -250,16 +254,20 @@ function formInsertion(){
                         }
                     ?>
                 </select>
-                <label for="id_qtvente">Quantité : </label><input name="qt" id="id_qtvente" size="20" type="number" min="0"/>
+                <label for="id_qtvente">Quantité : </label><input name="qt" id="id_qtvente" size="20" type="number" min="0" class="form-control"/>
 
             </article>
+
 
             <article class="CLIENTS">
-                <label for="id_nomclient">Nom Client : </label><input name="nomc" id="id_nomclient" size="20" />
-                <label for="id_villeclient">Ville du client : </label><input name="villec" id="id_villeclient" size="20" />
+                <label for="id_nomclient">Nom Client : </label><input name="nomc" id="id_nomclient" size="20" class="form-control"/>
+                <label for="id_villeclient">Ville du client : </label><input name="villec" id="id_villeclient" size="20" class="form-control"/>
             </article>
 
-            <input type="submit" value="Insérer"/>
+            <br>
+            <div class="text-center">
+                <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Insérer"/>
+            </div>
 
         </fieldset>
         <script>
@@ -379,19 +387,21 @@ function formSupression(){
 
     ?>
     
-    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-group">
         <fieldset>
             <label for="id_table">Table :</label> 
-            <select id="id_table" name="table" size="1" onchange="changeForm(this)">
+            <select id="id_table" name="table" size="1" onchange="changeForm(this)" class="form-control">
                 <option value="REPRESENTANTS">représentants</option>
                 <option value="PRODUITS">produits</option>
                 <option value="VENTES">ventes</option>
                 <option value="CLIENTS">clients</option>
             </select>
 
+            <br>
+
             <article class="REPRESENTANTS">
                 <label for="id_repr">Représentant :</label>
-                <select id="id_repr" name="repr" size="1">
+                <select id="id_repr" name="repr" size="1" class="form-control">
                 <?php
                     $data = get_table_with_id("repr");
                     foreach ($data as $val){
@@ -404,7 +414,7 @@ function formSupression(){
 
             <article class="PRODUITS">
                 <label for="id_prod">Produit : </label>
-                <select id="id_prod" name="prod" size="1">
+                <select id="id_prod" name="prod" size="1" class="form-control">
                 <?php
                     $data = get_table_with_id("prod");
                     foreach ($data as $val){
@@ -417,7 +427,7 @@ function formSupression(){
 
             <article class="VENTES">
                 <label for="id_venter">Représentant :</label>
-                <select id="id_vente" name="vente" size="1">
+                <select id="id_vente" name="vente" size="1" class="form-control">
                     <?php
                     $data = get_table_with_id("");
                     foreach ($data as $val){
@@ -430,7 +440,7 @@ function formSupression(){
 
             <article class="CLIENTS">
             <label for="id_client">Client : </label>
-                <select id="id_client" name="client" size="1">
+                <select id="id_client" name="client" size="1" class="form-control">
                 <?php
                     $data = get_table_with_id("cli");
                     foreach ($data as $val){
@@ -441,7 +451,10 @@ function formSupression(){
                 </select>
             </article>
 
-            <input type="submit" value="Supprimer"/>
+            <br>
+            <div class="text-center">
+                <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Supprimer"/>
+            </div>
 
         </fieldset>
         <script>
@@ -629,14 +642,31 @@ function getPage($id){
     if ($res){
         $tab = $res->fetchAll(PDO::FETCH_ASSOC);
         if (sizeof($tab) === 1){
-            echo "Representant : ".$tab[0]["NOMR"].' de '.$tab[0]["VILLE"].'</br>';
-            echo "Client : ".$tab[0]["NOMC"].' de '.$tab[0]["VILLEC"].'</br>';
-            echo "Achat : ".$tab[0]["NOMP"].' '.$tab[0]["COUL"].' ('.$tab[0]["PRIX"].'€)</br>';
-            echo "Nombre : ".$tab[0]["QT"].'</br>';
+            echo 'Representant : <b class="fw-bold">'.$tab[0]["NOMR"].' de '.$tab[0]["VILLE"].'</b></br>';
+            echo 'Client : <b class="fw-bold">'.$tab[0]["NOMC"].' de '.$tab[0]["VILLEC"].'</b></br>';
+            echo 'Achat : <b class="fw-bold">'.$tab[0]["NOMP"].' '.$tab[0]["COUL"].' ('.$tab[0]["PRIX"].'€)</b></br>';
+            echo 'Nombre : <b class="fw-bold">'.$tab[0]["QT"].'</b></br>';
         }
     }
 }
 
+
+function genFooter(){
+    ?>
+
+    <footer class="bg-dark container-fluid">
+        <div class="justify-content-between row">
+            <div class="col-4">
+                <p class="text-light">© Brewal Guyon et Morgan Mootoosamy</p>
+            </div>
+            <div class="col-4">
+                <p class="text-light text-end"><a href="#" onclick="history.back()">Revenir en arrière</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <?php
+}
 
 ?>
 
