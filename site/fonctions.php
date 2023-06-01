@@ -628,24 +628,34 @@ function afficheLien($tab){
 }
 
 function getPage($id){
-    $db = new PDO('sqlite:bdd/repr.sqlite');
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    if (strlen($id) === 3){
+        $db = new PDO('sqlite:bdd/repr.sqlite');
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 
-    $nr = addslashes($id[0]);
-    $nc = addslashes($id[1]);
-    $np = addslashes($id[2]);
+        $nr = $id[0];
+        $nc = $id[1];
+        $np = $id[2];
+        
 
-    $requete = "SELECT NOMR,r.VILLE, NOMC, c.VILLE AS VILLEC, NOMP, COUL, PRIX, QT FROM VENTES v INNER JOIN REPRESENTANTS r ON r.NR = v.NR INNER JOIN CLIENTS c ON c.NC = v.NC INNER JOIN PRODUITS p ON p.NP = v.NP WHERE v.NR='$nr' AND v.NC='$nc' AND v.NP='$np'";
-    
-    $res = $db->query($requete);
-    if ($res){
-        $tab = $res->fetchAll(PDO::FETCH_ASSOC);
-        if (sizeof($tab) === 1){
-            echo 'Representant : <b class="fw-bold">'.$tab[0]["NOMR"].' de '.$tab[0]["VILLE"].'</b></br>';
-            echo 'Client : <b class="fw-bold">'.$tab[0]["NOMC"].' de '.$tab[0]["VILLEC"].'</b></br>';
-            echo 'Achat : <b class="fw-bold">'.$tab[0]["NOMP"].' '.$tab[0]["COUL"].' ('.$tab[0]["PRIX"].'€)</b></br>';
-            echo 'Nombre : <b class="fw-bold">'.$tab[0]["QT"].'</b></br>';
+        $requete = "SELECT NOMR,r.VILLE, NOMC, c.VILLE AS VILLEC, NOMP, COUL, PRIX, QT FROM VENTES v INNER JOIN REPRESENTANTS r ON r.NR = v.NR INNER JOIN CLIENTS c ON c.NC = v.NC INNER JOIN PRODUITS p ON p.NP = v.NP WHERE v.NR=:nr AND v.NC=:nc AND v.NP=:np";
+        $statement = $db->prepare($requete);
+
+        $statement->bindValue(':nr', $nr, PDO::PARAM_INT);
+        $statement->bindValue(':nc', $nc, PDO::PARAM_INT);
+        $statement->bindValue(':np', $np, PDO::PARAM_INT);
+        
+
+        $statement->execute();
+        if ($statement){
+            $tab = $statement->fetchAll(PDO::FETCH_ASSOC);
+            if (sizeof($tab) === 1){
+                echo 'Representant : <b class="fw-bold">'.$tab[0]["NOMR"].' de '.$tab[0]["VILLE"].'</b></br>';
+                echo 'Client : <b class="fw-bold">'.$tab[0]["NOMC"].' de '.$tab[0]["VILLEC"].'</b></br>';
+                echo 'Achat : <b class="fw-bold">'.$tab[0]["NOMP"].' '.$tab[0]["COUL"].' ('.$tab[0]["PRIX"].'€)</b></br>';
+                echo 'Nombre : <b class="fw-bold">'.$tab[0]["QT"].'</b></br>';
+            }
         }
     }
 }
