@@ -109,7 +109,7 @@ function validate($login, $pass){
     return $valide;
 }
 
-
+?>
 <script>  
 function verif_mdp() {  
   var pw = document.getElementById("pass").value;  
