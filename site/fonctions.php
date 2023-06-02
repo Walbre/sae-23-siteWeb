@@ -109,6 +109,61 @@ function validate($login, $pass){
     return $valide;
 }
 
+
+<script>  
+function verif_mdp() {  
+  var pw = document.getElementById("pass").value;  
+  var lettres = /[a-zA-Z]/;
+  var nombres = /[0-9]/;
+  var car =  /[!-*]/;
+
+  var verif = true;
+  if(pw == "" ) {  
+     document.getElementById("message_mdp").innerHTML = "**Mot de passe à remplir";  
+     var verif = false;  
+  }  
+  else if(pw.length < 8) {  
+     document.getElementById("message_mdp").innerHTML = "**Il faut au moins 8 caractères";  
+     var verif = false;
+  }   
+  else if(!lettres.test(pw)){
+    document.getElementById("message_mdp").innerHTML = "**Il faut au moins une lettre majuscule and une lettre minuscule";  
+    var verif = false;
+  }
+  else if(!nombres.test(pw)){
+    document.getElementById("message_mdp").innerHTML = "**Il faut au moins un chiffre";  
+    var verif = false;
+  }
+  else if(!car.test(pw)){
+    document.getElementById("message_mdp").innerHTML = "**Il faut au moins un caractère spécial";  
+    var verif = false;
+  }
+  return verif;
+  } 
+</script>  
+
+<?php
+
+function insert_compte($login, $pass){
+
+    $verif = true;
+
+    $dbc = new PDO('sqlite:bdd/comptes.sqlite');
+    $dbc->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $requete = "INSERT INTO comptes VALUES ('$login','$pass',utilisateur);";
+    $res = $dbc->query($requete);
+
+    if (!$res){
+        echo "erreur";
+        $verif = false;
+    }
+
+    return $verif;
+
+}
+
+
+
 function genCaptchat(){
     $url = "http://20.216.129.46/getcaptchat";
     $contents = file_get_contents($url);
@@ -151,6 +206,11 @@ function get_table($qui){
         return $tab;
     }
 }
+
+
+
+
+
 
 
 
