@@ -11,6 +11,7 @@ require "fonctions.php";
 		<title>connexion</title>
 	</head>
     <body>
+	<h2>Bienvenue sur la page connexion ! </h2>
 <?php
 if (!empty($_GET) && isset($_GET["action"]) && $_GET["action"]=="logout") {
 				session_destroy();
@@ -54,9 +55,14 @@ if (empty($_SESSION)){
 	<form id="cnx" method="post" action="connexion.php">
 		<p><label for="login">Login : </label><input type="text" id="login" name="login" /></p>
 		<p><label for="pass">Mot de Passe : </label><input type="password" id="pass" name="pass" /></p>
-		<p><input type="submit" id="submit" name="submit" value="Connexion" />  <input type="submit" id="register" name="register" value="Register" /></p>
+		<p><input type="submit" id="submit" name="submit" value="Connexion" /></p>
 		
 	</form>
+
+	<form id="rgs" method="post" action="register.php">
+	<input type="submit" id="register" name="register" value="Register" />
+	</form>
+
 <?php
 }
 ?>	    
