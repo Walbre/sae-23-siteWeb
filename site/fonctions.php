@@ -7,7 +7,7 @@ error_reporting (E_ALL);
 session_start();
 
 
-function genNavBar($statut){
+function genNavBar($statut, $nom){
 
     ?>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -52,6 +52,14 @@ function genNavBar($statut){
                     <li class="nav-item">
                         <a class="nav-link" href="deconnexion.php">deconnexion</a>
                     </li>
+                </ul>
+                <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+                    <a href="profil.php">
+                        <li class="nav-item">
+                            <img src="<?php getProfilPic($nom) ?>" alt="photo de profil" style="height:50px;width:auto;">
+                            <br><div class="text-white"><?php echo htmlspecialchars($nom); ?></div>
+                        </li>
+                    </a>
                 </ul>
             </div>
         </div>
@@ -737,6 +745,26 @@ function genFooter(){
 
     <?php
 }
+
+
+function getProfilPic($username){
+    $db = new PDO('sqlite:bdd/comptes.sqlite');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $requete = "SELECT photo FROM comptes WHERE login=:nom";
+    $statement = $db->prepare($requete);
+
+    $statement->bindValue(':nom', $username, PDO::PARAM_STR);
+
+    $statement->execute();
+    if ($statement){
+        $tab = $statement->fetchAll(PDO::FETCH_ASSOC);
+        echo $tab[0]["photo"];
+        return;
+    }
+}
+
+
 
 ?>
 

@@ -50,7 +50,7 @@ require "fonctions.php";
                 }
 
 
-                genNavBar($_SESSION["statut"]);
+                genNavBar($_SESSION["statut"], $_SESSION["pseudo"]);
 
 
                 echo '<div class="container">';

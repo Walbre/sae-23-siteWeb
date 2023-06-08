@@ -21,7 +21,7 @@ require "fonctions.php";
 <body>
     <?php
     if (isset($_SESSION) && isset($_SESSION["pseudo"])){
-        genNavBar($_SESSION["statut"]);
+        genNavBar($_SESSION["statut"], $_SESSION["pseudo"]);
         echo '<div class="container mb-3">';
         genSearchBar();
         if (!empty($_GET)){
@@ -39,13 +39,13 @@ require "fonctions.php";
             }
         }
 
+        echo '</div>';
+
     }
     else{
         redirect("connexion.php", null);
     }
     ?>
-
-    </div>
 
     <?php genFooter(); ?>
 
