@@ -764,7 +764,46 @@ function getProfilPic($username){
     }
 }
 
+function getDispoPictures(){
+    return array_diff(scandir("images/"), [".", ".."]);
+}
 
+function formChagePDP(){
+    ?>
+    <form action="" method="post">
+        <fieldset>
+        <label for="id_photo">Changer de photo de profil : </label>
+        <select id="id_photo" name="photo" size="1" class="form-control">
+        <?php
+            $data = getDispoPictures();
+            foreach ($data as $val){
+                echo "<option value=".$val.'>'.$val.'</option>';
+            }
+
+        ?>
+        </select>
+        <div class="text-center">
+            <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Changer la photo de profil"/>
+        </div>
+        </fieldset>
+    </form>
+
+    <?php
+}
+
+function formPasswd(){
+    ?>
+    <form action="" method="post">
+        <fieldset>
+            <label for="id_password">Changer de mot de passe : </label>
+            <input name="mdp" id="id_password" size="20" class="form-control" type="password" placeholder="aucune modification"/>
+        </fieldset>
+        <div class="text-center">
+            <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Changer le mot de passe"/>
+        </div>
+    </form>
+    <?php
+}
 
 ?>
 

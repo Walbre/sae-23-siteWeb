@@ -33,6 +33,9 @@ require "fonctions.php";
 
         <?php
 
+        formChagePDP();
+        formPasswd();
+
         echo '</div>';
     }
     else{
