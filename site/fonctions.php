@@ -366,10 +366,14 @@ function ajoutClient($nom, $ville){
     $statement->bindValue(':nom', $nom, PDO::PARAM_STR);
     $statement->bindValue(':ville', $ville, PDO::PARAM_STR);
         
-
-    $statement->execute();
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
     if (!$statement){
-        echo "erreur";
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
     }
 }
 
@@ -386,9 +390,14 @@ function ajoutRepr($nom, $ville){
     $statement->bindValue(':ville', $ville, PDO::PARAM_STR);
         
 
-    $statement->execute();
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
     if (!$statement){
-        echo "erreur";
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
     }
 }
 
@@ -406,9 +415,14 @@ function ajoutProduit($nom, $couleur, $prix){
     $statement->bindValue(':prix', $prix, PDO::PARAM_INT);
         
 
-    $statement->execute();
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
     if (!$statement){
-        echo "erreur";
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
     }
 }
 
@@ -426,9 +440,14 @@ function ajoutVente($nr, $nc, $np, $quantite){
     $statement->bindValue(':np', $np, PDO::PARAM_INT);
     $statement->bindValue(':quantite', $quantite, PDO::PARAM_INT);
 
-    $statement->execute();
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
     if (!$statement){
-        echo "erreur";
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
     }
 }
 
@@ -561,9 +580,14 @@ function supprimerClient($nc){
 
     $statement->bindValue(':nc', $nc, PDO::PARAM_INT);
 
-    $statement->execute();
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
     if (!$statement){
-        echo "erreur";
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
     }
 }
 
@@ -578,9 +602,14 @@ function supprimerRepr($nr){
 
     $statement->bindValue(':nr', $nr, PDO::PARAM_INT);
 
-    $statement->execute();
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
     if (!$statement){
-        echo "erreur";
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
     }
 }
 
@@ -595,9 +624,14 @@ function supprimerProduit($np){
 
     $statement->bindValue(':np', $np, PDO::PARAM_INT);
 
-    $statement->execute();
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
     if (!$statement){
-        echo "erreur";
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
     }
 }
 
@@ -614,9 +648,14 @@ function supprimerVente($nr, $nc, $np){
     $statement->bindValue(':np', $np, PDO::PARAM_INT);
     $statement->bindValue(':nr', $nr, PDO::PARAM_INT);
 
-    $statement->execute();
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
     if (!$statement){
-        echo "erreur";
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
     }
 }
 

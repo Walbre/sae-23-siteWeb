@@ -20,17 +20,18 @@ require "fonctions.php";
     <?php
         if (!empty($_SESSION) && isset($_SESSION["pseudo"])){
             if (isset($_SESSION["statut"]) && $_SESSION["statut"] === "administrateur"){
+                $erreur = "";
 
                 if (!empty($_POST) && isset($_POST["table"])){
                     if ($_POST["table"] === "CLIENTS"){
                         if (isset($_POST["client"]) && !($_POST["client"] === "")){
-                            supprimerClient($_POST["client"]);
+                            $erreur = supprimerClient($_POST["client"]);
                         }
                     }
 
                     else if ($_POST["table"] === "REPRESENTANTS"){
                         if (isset($_POST["repr"]) && !($_POST["repr"] === "")){
-                            supprimerRepr($_POST["repr"]);
+                            $erreur = supprimerRepr($_POST["repr"]);
                         }
                     }
 
@@ -38,13 +39,13 @@ require "fonctions.php";
                         if (isset($_POST["vente"]) && !($_POST["vente"] === "")){
                             $array_ventes = explode(",", $_POST["vente"]);
                             if (sizeof($array_ventes) === 3){
-                                supprimerVente($array_ventes[0], $array_ventes[1], $array_ventes[2]);
+                                $erreur = supprimerVente($array_ventes[0], $array_ventes[1], $array_ventes[2]);
                             }
                         }
                     }
                     else if ($_POST["table"] === "PRODUITS"){
                         if (isset($_POST["prod"]) && !($_POST["prod"] === "")){
-                            supprimerProduit($_POST["prod"]);
+                            $erreur = supprimerProduit($_POST["prod"]);
                         }
                     }
                 }
@@ -56,6 +57,11 @@ require "fonctions.php";
                 echo '<div class="container">';
 
                 echo '<h1 class="display-5 fw-bold text-center">Bienvenue '.$_SESSION["pseudo"].'</h1>';
+
+                if ($erreur !== "" && $erreur !== null){
+                    echo '<div class="alert alert-danger" role="alert">'.htmlspecialchars($erreur).'</div>';
+                }
+
                 echo '<h2 class="display-5 text-center">Page de suppression d\'objets</h2>';
                 
 
