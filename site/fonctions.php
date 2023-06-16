@@ -359,6 +359,7 @@ function ajoutClient($nom, $ville){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    analyseSQL("ajoutClient", [$nom, $ville]);
 
     $requete = "INSERT INTO CLIENTS(NOMC, VILLE) VALUES (:nom, :ville)";
     $statement = $db->prepare($requete);
@@ -382,6 +383,7 @@ function ajoutRepr($nom, $ville){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    analyseSQL("ajoutRepr", [$nom, $ville]);
 
     $requete = "INSERT INTO REPRESENTANTS(NOMR, VILLE) VALUES (:nom, :ville)";
     $statement = $db->prepare($requete);
@@ -405,6 +407,8 @@ function ajoutRepr($nom, $ville){
 function ajoutProduit($nom, $couleur, $prix){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    analyseSQL("ajoutProduit", [$nom, $couleur, $prix]);
 
     $requete = "INSERT INTO PRODUITS(NOMP, COUL, PRIX) VALUES (:nom, :couleur, :prix)";
 
@@ -431,6 +435,7 @@ function ajoutVente($nr, $nc, $np, $quantite){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    analyseSQL("ajoutVente", [$nr, $nc, $np, $quantite]);
 
     $requete = "INSERT INTO VENTES(NR, NC, NP, QT) VALUES (:nr, :nc, :np, :quantite)";
     $statement = $db->prepare($requete);
@@ -574,6 +579,7 @@ function supprimerClient($nc){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    analyseSQL("supprimerClient", [$nc]);
 
     $requete = "DELETE FROM CLIENTS WHERE nc=:nc";
     $statement = $db->prepare($requete);
@@ -596,6 +602,7 @@ function supprimerRepr($nr){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    analyseSQL("supprimerRepr", [$nr]);
 
     $requete = "DELETE FROM REPRESENTANTS WHERE nr=:nr";
     $statement = $db->prepare($requete);
@@ -618,6 +625,7 @@ function supprimerProduit($np){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    analyseSQL("supprimerProduit", [$np]);
 
     $requete = "DELETE FROM PRODUITS WHERE np=:np";
     $statement = $db->prepare($requete);
@@ -640,6 +648,7 @@ function supprimerVente($nr, $nc, $np){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    analyseSQL("supprimerVente", [$nr, $nc, $np]);
 
     $requete = "DELETE FROM VENTES WHERE nc=:nc AND np=:np AND nr=:nr";
     $statement = $db->prepare($requete);
@@ -681,6 +690,8 @@ function genSearchBar(){
 function getSearch($val){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    analyseSQL("getSearch", [$val]);
 
     $val = "%$val%";
     $requete = "SELECT v.NR, v.NP, v.NC, NOMR,r.VILLE, NOMC, c.VILLE AS VILLEC, NOMP, COUL, PRIX, QT FROM VENTES v INNER JOIN REPRESENTANTS r ON r.NR = v.NR INNER JOIN CLIENTS c ON c.NC = v.NC INNER JOIN PRODUITS p ON p.NP = v.NP WHERE c.VILLE LIKE :val OR NOMC LIKE :val OR r.VILLE LIKE :val OR NOMR LIKE :val OR COUL LIKE :val OR NOMP LIKE :val";
@@ -764,6 +775,7 @@ function getPage($id){
         $nc = $id[1];
         $np = $id[2];
         
+        analyseSQL("getPage", [$nr, $nc, $np]);
 
         $requete = "SELECT NOMR,r.VILLE, NOMC, c.VILLE AS VILLEC, NOMP, COUL, PRIX, QT FROM VENTES v INNER JOIN REPRESENTANTS r ON r.NR = v.NR INNER JOIN CLIENTS c ON c.NC = v.NC INNER JOIN PRODUITS p ON p.NP = v.NP WHERE v.NR=:nr AND v.NC=:nc AND v.NP=:np";
         $statement = $db->prepare($requete);
@@ -862,6 +874,44 @@ function formPasswd(){
     </form>
     <?php
 }
+
+
+function analyseSQL($nom_methode, $parametres){
+    $res = $_SERVER['REMOTE_ADDR']." -> ".$nom_methode."(";
+    foreach($parametres as $param){
+        $res = $res."[$param]";
+    }
+    $res = $res.")\n";
+    // recherche de possibles tentatives de XSS et SQLI
+    
+    $suspect = "";
+    foreach($parametres as $param){
+        if (strpos($param, "'") !== false){
+            $suspect = $suspect."Parametre suspect : $param, ' trouvé\n";
+        }
+        if (strpos($param, '"') !== false){
+            $suspect = $suspect."Parametre suspect : $param, ".'" trouvé'."\n";
+        }
+        if (strpos($param, "<") !== false){
+            $suspect = $suspect."Parametre suspect : $param, < trouvé\n";
+        }
+        if (strpos($param, ">") !== false){
+            $suspect = $suspect."Parametre suspect : $param, > trouvé\n";
+        }
+    }
+    if ($suspect !== ""){
+        $filename = "suspect.log";
+    }
+    else{
+        $filename = "normal.log";
+    }
+
+    $file = fopen("logs/$filename", "a");
+    fwrite($file, $res.$suspect);
+    fclose($file);
+    
+}
+
 
 ?>
 
