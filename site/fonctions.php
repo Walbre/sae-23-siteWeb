@@ -227,14 +227,14 @@ function affiche_tableau($tableau, $head){
     echo '<table class="table"'.">\n";
     echo "<thead>\n<tr>\n";
     foreach ($head as $cle){
-        echo '<th scope="col">'.$cle."</th>";
+        echo '<th scope="col">'.htmlspecialchars($cle)."</th>";
     }
     echo "</tr>\n</thead>\n";
     echo "<tbody>\n";
     foreach($tableau as $tab){
         echo "<tr>";
         foreach($tab as $sous_tab){
-            echo '<td scope="row">'.$sous_tab."</td>";
+            echo '<td scope="row">'.htmlspecialchars($sous_tab)."</td>";
         }
         echo "</tr>\n";
     }
@@ -283,7 +283,7 @@ function formInsertion(){
                         if ($res){
                             $tab = $res->fetchAll(PDO::FETCH_ASSOC);
                             foreach($tab as $val){
-                                echo "<option value=".$val["id"].">".$val["field"]."</option>\n";
+                                echo "<option value=".htmlspecialchars($val["id"]).">".htmlspecialchars($val["field"])."</option>\n";
                             }
                         }
                     ?>
@@ -300,7 +300,7 @@ function formInsertion(){
                         if ($res){
                             $tab = $res->fetchAll(PDO::FETCH_ASSOC);
                             foreach($tab as $val){
-                                echo "<option value=".$val["id"].">".$val["field"]."</option>\n";
+                                echo "<option value=".htmlspecialchars($val["id"]).">".htmlspecialchars($val["field"])."</option>\n";
                             }
                         }
                     ?>
@@ -317,7 +317,7 @@ function formInsertion(){
                         if ($res){
                             $tab = $res->fetchAll(PDO::FETCH_ASSOC);
                             foreach($tab as $val){
-                                echo "<option value=".$val["id"].">".$val["field"]."</option>\n";
+                                echo "<option value=".htmlspecialchars($val["id"]).">".htmlspecialchars($val["field"])."</option>\n";
                             }
                         }
                     ?>
@@ -359,13 +359,16 @@ function ajoutClient($nom, $ville){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $nom = addslashes($nom);
-    $ville = addslashes($ville);
 
-    $requete = "INSERT INTO CLIENTS(NOMC, VILLE) VALUES ('$nom', '$ville')";
+    $requete = "INSERT INTO CLIENTS(NOMC, VILLE) VALUES (:nom, :ville)";
+    $statement = $db->prepare($requete);
 
-    $res = $db->exec($requete);
-    if (!$res){
+    $statement->bindValue(':nom', $nom, PDO::PARAM_STR);
+    $statement->bindValue(':ville', $ville, PDO::PARAM_STR);
+        
+
+    $statement->execute();
+    if (!$statement){
         echo "erreur";
     }
 }
@@ -375,13 +378,16 @@ function ajoutRepr($nom, $ville){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $nom = addslashes($nom);
-    $ville = addslashes($ville);
 
-    $requete = "INSERT INTO REPRESENTANTS(NOMR, VILLE) VALUES ('$nom', '$ville')";
+    $requete = "INSERT INTO REPRESENTANTS(NOMR, VILLE) VALUES (:nom, :ville)";
+    $statement = $db->prepare($requete);
 
-    $res = $db->exec($requete);
-    if (!$res){
+    $statement->bindValue(':nom', $nom, PDO::PARAM_STR);
+    $statement->bindValue(':ville', $ville, PDO::PARAM_STR);
+        
+
+    $statement->execute();
+    if (!$statement){
         echo "erreur";
     }
 }
@@ -391,14 +397,17 @@ function ajoutProduit($nom, $couleur, $prix){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $nom = addslashes($nom);
-    $couleur = addslashes($couleur);
-    $prix = addslashes($prix);
+    $requete = "INSERT INTO PRODUITS(NOMP, COUL, PRIX) VALUES (:nom, :couleur, :prix)";
 
-    $requete = "INSERT INTO PRODUITS(NOMP, COUL, PRIX) VALUES ('$nom', '$couleur', '$prix')";
+    $statement = $db->prepare($requete);
 
-    $res = $db->exec($requete);
-    if (!$res){
+    $statement->bindValue(':nom', $nom, PDO::PARAM_STR);
+    $statement->bindValue(':couleur', $couleur, PDO::PARAM_STR);
+    $statement->bindValue(':prix', $prix, PDO::PARAM_INT);
+        
+
+    $statement->execute();
+    if (!$statement){
         echo "erreur";
     }
 }
@@ -408,15 +417,17 @@ function ajoutVente($nr, $nc, $np, $quantite){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $nr = addslashes($nr);
-    $nc = addslashes($nc);
-    $np= addslashes($np);
-    $quantite = addslashes($quantite);
 
-    $requete = "INSERT INTO VENTES(NR, NC, NP, QT) VALUES ('$nr', '$nc', '$np', '$quantite')";
+    $requete = "INSERT INTO VENTES(NR, NC, NP, QT) VALUES (:nr, :nc, :np, :quantite)";
+    $statement = $db->prepare($requete);
 
-    $res = $db->exec($requete);
-    if (!$res){
+    $statement->bindValue(':nr', $nr, PDO::PARAM_INT);
+    $statement->bindValue(':nc', $nc, PDO::PARAM_INT);
+    $statement->bindValue(':np', $np, PDO::PARAM_INT);
+    $statement->bindValue(':quantite', $quantite, PDO::PARAM_INT);
+
+    $statement->execute();
+    if (!$statement){
         echo "erreur";
     }
 }
@@ -473,7 +484,7 @@ function formSupression(){
                 <?php
                     $data = get_table_with_id("repr");
                     foreach ($data as $val){
-                        echo "<option value=".$val["NR"].'>'.$val["NOMR"].' de '.$val["VILLE"].'</option>';
+                        echo "<option value=".htmlspecialchars($val["NR"]).'>'.htmlspecialchars($val["NOMR"]).' de '.htmlspecialchars($val["VILLE"]).'</option>';
                     }
 
                 ?>
@@ -486,7 +497,7 @@ function formSupression(){
                 <?php
                     $data = get_table_with_id("prod");
                     foreach ($data as $val){
-                        echo "<option value=".$val["NP"].'>'.$val["NOMP"].' '.$val["COUL"].' ('.$val["PRIX"].'€)'.'</option>';
+                        echo "<option value=".htmlspecialchars($val["NP"]).'>'.htmlspecialchars($val["NOMP"]).' '.htmlspecialchars($val["COUL"]).' ('.htmlspecialchars($val["PRIX"]).'€)'.'</option>';
                     }
 
                 ?>
@@ -499,7 +510,7 @@ function formSupression(){
                     <?php
                     $data = get_table_with_id("");
                     foreach ($data as $val){
-                        echo "<option value=".$val["NR"].','.$val["NC"].','.$val["NP"].'>'.$val["NOMR"].' de '.$val["VILLE"].' -> '.$val["NOMC"].' de '.$val["VILLEC"].' : '.$val["NOMP"].' '.$val["COUL"].' ('.$val["PRIX"].'€) x '.$val["QT"].'</option>';
+                        echo "<option value=".htmlspecialchars($val["NR"]).','.htmlspecialchars($val["NC"]).','.htmlspecialchars($val["NP"]).'>'.htmlspecialchars($val["NOMR"]).' de '.htmlspecialchars($val["VILLE"]).' -> '.$val["NOMC"].' de '.htmlspecialchars($val["VILLEC"]).' : '.htmlspecialchars($val["NOMP"]).' '.htmlspecialchars($val["COUL"]).' ('.htmlspecialchars($val["PRIX"]).'€) x '.htmlspecialchars($val["QT"]).'</option>';
                     }
                     ?>
                 </select>
@@ -512,7 +523,7 @@ function formSupression(){
                 <?php
                     $data = get_table_with_id("cli");
                     foreach ($data as $val){
-                        echo "<option value=".$val["NC"].'>'.$val["NOMC"].' '.$val["VILLE"].'</option>';
+                        echo "<option value=".htmlspecialchars($val["NC"]).'>'.htmlspecialchars($val["NOMC"]).' '.htmlspecialchars($val["VILLE"]).'</option>';
                     }
 
                 ?>
@@ -544,12 +555,14 @@ function supprimerClient($nc){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $nc = addslashes($nc);
 
-    $requete = "DELETE FROM CLIENTS WHERE nc='$nc'";
+    $requete = "DELETE FROM CLIENTS WHERE nc=:nc";
+    $statement = $db->prepare($requete);
 
-    $res = $db->exec($requete);
-    if (!$res){
+    $statement->bindValue(':nc', $nc, PDO::PARAM_INT);
+
+    $statement->execute();
+    if (!$statement){
         echo "erreur";
     }
 }
@@ -559,12 +572,14 @@ function supprimerRepr($nr){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $nr = addslashes($nr);
 
-    $requete = "DELETE FROM REPRESENTANTS WHERE nr='$nr'";
+    $requete = "DELETE FROM REPRESENTANTS WHERE nr=:nr";
+    $statement = $db->prepare($requete);
 
-    $res = $db->exec($requete);
-    if (!$res){
+    $statement->bindValue(':nr', $nr, PDO::PARAM_INT);
+
+    $statement->execute();
+    if (!$statement){
         echo "erreur";
     }
 }
@@ -574,12 +589,14 @@ function supprimerProduit($np){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $np = addslashes($np);
 
-    $requete = "DELETE FROM PRODUITS WHERE np='$np'";
+    $requete = "DELETE FROM PRODUITS WHERE np=:np";
+    $statement = $db->prepare($requete);
 
-    $res = $db->exec($requete);
-    if (!$res){
+    $statement->bindValue(':np', $np, PDO::PARAM_INT);
+
+    $statement->execute();
+    if (!$statement){
         echo "erreur";
     }
 }
@@ -589,14 +606,16 @@ function supprimerVente($nr, $nc, $np){
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $nr = addslashes($nr);
-    $nc = addslashes($nc);
-    $np= addslashes($np);
 
-    $requete = "DELETE FROM VENTES WHERE nc='$nc' AND np='$np' AND nr='$nr'";
+    $requete = "DELETE FROM VENTES WHERE nc=:nc AND np=:np AND nr=:nr";
+    $statement = $db->prepare($requete);
 
-    $res = $db->exec($requete);
-    if (!$res){
+    $statement->bindValue(':nc', $nc, PDO::PARAM_INT);
+    $statement->bindValue(':np', $np, PDO::PARAM_INT);
+    $statement->bindValue(':nr', $nr, PDO::PARAM_INT);
+
+    $statement->execute();
+    if (!$statement){
         echo "erreur";
     }
 }
@@ -658,7 +677,7 @@ function afficheLien($tab){
     $i = 1;
     foreach($tab as $vals){
         echo '<tr onclick="'."window.location='"."index.php?page=".$vals["NR"].$vals["NC"].$vals["NP"]."'".'">'."\n".'<td scope="row">'."$i"."</td>\n";
-        echo '<td>'.$vals["NOMR"].' de '.$vals["VILLE"]."</td>\n<td>".$vals["NOMC"].' de '.$vals["VILLEC"]."</td>\n<td>".$vals["NOMP"].' '.$vals["COUL"].' ('.$vals["PRIX"]."€)</td>\n<td>".$vals["QT"]."</td>\n";
+        echo '<td>'.htmlspecialchars($vals["NOMR"]).' de '.htmlspecialchars($vals["VILLE"])."</td>\n<td>".htmlspecialchars($vals["NOMC"]).' de '.htmlspecialchars($vals["VILLEC"])."</td>\n<td>".htmlspecialchars($vals["NOMP"]).' '.htmlspecialchars($vals["COUL"]).' ('.htmlspecialchars($vals["PRIX"])."€)</td>\n<td>".htmlspecialchars($vals["QT"])."</td>\n";
         echo "</tr>\n";
         $i += 1;
     }
@@ -719,10 +738,10 @@ function getPage($id){
         if ($statement){
             $tab = $statement->fetchAll(PDO::FETCH_ASSOC);
             if (sizeof($tab) === 1){
-                echo 'Representant : <b class="fw-bold">'.$tab[0]["NOMR"].' de '.$tab[0]["VILLE"].'</b></br>';
-                echo 'Client : <b class="fw-bold">'.$tab[0]["NOMC"].' de '.$tab[0]["VILLEC"].'</b></br>';
-                echo 'Achat : <b class="fw-bold">'.$tab[0]["NOMP"].' '.$tab[0]["COUL"].' ('.$tab[0]["PRIX"].'€)</b></br>';
-                echo 'Nombre : <b class="fw-bold">'.$tab[0]["QT"].'</b></br>';
+                echo 'Representant : <b class="fw-bold">'.htmlspecialchars($tab[0]["NOMR"]).' de '.htmlspecialchars($tab[0]["VILLE"]).'</b></br>';
+                echo 'Client : <b class="fw-bold">'.htmlspecialchars($tab[0]["NOMC"]).' de '.htmlspecialchars($tab[0]["VILLEC"]).'</b></br>';
+                echo 'Achat : <b class="fw-bold">'.htmlspecialchars($tab[0]["NOMP"]).' '.htmlspecialchars($tab[0]["COUL"]).' ('.htmlspecialchars($tab[0]["PRIX"]).'€)</b></br>';
+                echo 'Nombre : <b class="fw-bold">'.htmlspecialchars($tab[0]["QT"]).'</b></br>';
             }
         }
     }
@@ -777,7 +796,7 @@ function formChagePDP(){
         <?php
             $data = getDispoPictures();
             foreach ($data as $val){
-                echo "<option value=".$val.'>'.$val.'</option>';
+                echo "<option value=".htmlspecialchars($val).'>'.htmlspecialchars($val).'</option>';
             }
 
         ?>
