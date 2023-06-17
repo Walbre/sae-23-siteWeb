@@ -56,12 +56,12 @@ function genNavBar($statut, $nom){
                     </li>
                 </ul>
                 <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
-                    <a href="profil.php">
-                        <li class="nav-item">
+                    <li class="nav-item">
+                        <a href="profil.php">
                             <img src="<?php getProfilPic($nom) ?>" alt="photo de profil" style="height:50px;width:auto;">
                             <br><div class="text-white"><?php echo htmlspecialchars($nom); ?></div>
-                        </li>
-                    </a>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -256,14 +256,14 @@ function affiche_tableau($tableau, $head){
     echo '<table class="table"'.">\n";
     echo "<thead>\n<tr>\n";
     foreach ($head as $cle){
-        echo '<th scope="col">'.htmlspecialchars($cle)."</th>";
+        echo '<th>'.htmlspecialchars($cle)."</th>";
     }
     echo "</tr>\n</thead>\n";
     echo "<tbody>\n";
     foreach($tableau as $tab){
         echo "<tr>";
         foreach($tab as $sous_tab){
-            echo '<td scope="row">'.htmlspecialchars($sous_tab)."</td>";
+            echo '<td>'.htmlspecialchars($sous_tab)."</td>";
         }
         echo "</tr>\n";
     }
@@ -287,15 +287,15 @@ function formInsertion(){
             <br>
 
             <article class="REPRESENTANTS">
-                <label for="id_nomr">Nom représentant : </label><input name="nomr" id="id_nomr" size="20" class="form-control"/>
-                <label for="id_viller">Ville représentant : </label><input name="viller" id="id_viller" size="20" class="form-control"/>
+                <label for="id_nomr">Nom représentant : </label><input name="nomr" id="id_nomr" size="20" class="form-control">
+                <label for="id_viller">Ville représentant : </label><input name="viller" id="id_viller" size="20" class="form-control">
             </article>
 
 
             <article class="PRODUITS">
-                <label for="id_nomprod">Nom produit : </label><input name="nom" id="id_nomprod" size="20" class="form-control"/>
-                <label for="id_couleurprod">Couleur : </label><input name="couleur" id="id_couleurprod" size="20" class="form-control"/>
-                <label for="id_prixprod">Prix : </label><input name="prix" id="id_prixprod" size="20" type="number" min="0" class="form-control"/>
+                <label for="id_nomprod">Nom produit : </label><input name="nom" id="id_nomprod" size="20" class="form-control">
+                <label for="id_couleurprod">Couleur : </label><input name="couleur" id="id_couleurprod" size="20" class="form-control">
+                <label for="id_prixprod">Prix : </label><input name="prix" id="id_prixprod" type="number" min="0" class="form-control">
             </article>
 
 
@@ -351,22 +351,23 @@ function formInsertion(){
                         }
                     ?>
                 </select>
-                <label for="id_qtvente">Quantité : </label><input name="qt" id="id_qtvente" size="20" type="number" min="0" class="form-control"/>
+                <label for="id_qtvente">Quantité : </label><input name="qt" id="id_qtvente" type="number" min="0" class="form-control">
 
             </article>
 
 
             <article class="CLIENTS">
-                <label for="id_nomclient">Nom Client : </label><input name="nomc" id="id_nomclient" size="20" class="form-control"/>
-                <label for="id_villeclient">Ville du client : </label><input name="villec" id="id_villeclient" size="20" class="form-control"/>
+                <label for="id_nomclient">Nom Client : </label><input name="nomc" id="id_nomclient" size="20" class="form-control">
+                <label for="id_villeclient">Ville du client : </label><input name="villec" id="id_villeclient" size="20" class="form-control">
             </article>
 
             <br>
             <div class="text-center">
-                <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Insérer"/>
+                <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Insérer">
             </div>
 
         </fieldset>
+        </form>
         <script>
             function changeForm(name){
                 var names = ["REPRESENTANTS", "VENTES", "PRODUITS", "CLIENTS"]
@@ -558,7 +559,7 @@ function formSupression(){
             </article>
 
             <article class="VENTES">
-                <label for="id_venter">Représentant :</label>
+                <label for="id_vente">Représentant :</label>
                 <select id="id_vente" name="vente" size="1" class="form-control">
                     <?php
                     $data = get_table_with_id("");
@@ -587,10 +588,11 @@ function formSupression(){
 
             <br>
             <div class="text-center">
-                <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Supprimer"/>
+                <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Supprimer">
             </div>
 
         </fieldset>
+    </form>
         <script>
             function changeForm(name){
                 var names = ["REPRESENTANTS", "VENTES", "PRODUITS", "CLIENTS"]
@@ -706,9 +708,9 @@ function genSearchBar(){
     <div class="row justify-content-center">
         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="get" class="col-8">
             <div class="input-group mb-3">
-                <input type="text" name="search" class="form-control" placeholder="rechercher" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                <input type="text" name="search" class="form-control" placeholder="rechercher" aria-label="Recipient's username">
                 <div class="input-group-append">
-                    <button type="submit" class="btn btn-outline-secondary" type="button">Rechercher</button>
+                    <button type="submit" class="btn btn-outline-secondary">Rechercher</button>
                 </div>
             </div>
         </form>
@@ -745,11 +747,11 @@ function afficheLien($tab){
     <table class="table" id="id_table">
     <thead>
         <tr>
-        <th scope="col" onclick="trier(this)">#</th>
-        <th scope="col" onclick="trier(this)">Client</th>
-        <th scope="col" onclick="trier(this)">Vendeur</th>
-        <th scope="col" onclick="trier(this)">Produit</th>
-        <th scope="col" onclick="trier(this)">Quantité</th>
+        <th onclick="trier(this)">#</th>
+        <th onclick="trier(this)">Client</th>
+        <th onclick="trier(this)">Vendeur</th>
+        <th onclick="trier(this)">Produit</th>
+        <th onclick="trier(this)">Quantité</th>
         </tr>
     </thead>
     <tbody>
@@ -757,7 +759,7 @@ function afficheLien($tab){
     <?php
     $i = 1;
     foreach($tab as $vals){
-        echo '<tr onclick="'."window.location='"."index.php?page=".$vals["NR"].$vals["NC"].$vals["NP"]."'".'">'."\n".'<td scope="row">'."$i"."</td>\n";
+        echo '<tr onclick="'."window.location='"."index.php?page=".$vals["NR"].$vals["NC"].$vals["NP"]."'".'">'."\n".'<td>'."$i"."</td>\n";
         echo '<td>'.htmlspecialchars($vals["NOMR"]).' de '.htmlspecialchars($vals["VILLE"])."</td>\n<td>".htmlspecialchars($vals["NOMC"]).' de '.htmlspecialchars($vals["VILLEC"])."</td>\n<td>".htmlspecialchars($vals["NOMP"]).' '.htmlspecialchars($vals["COUL"]).' ('.htmlspecialchars($vals["PRIX"])."€)</td>\n<td>".htmlspecialchars($vals["QT"])."</td>\n";
         echo "</tr>\n";
         $i += 1;
@@ -820,10 +822,10 @@ function getPage($id){
         if ($statement){
             $tab = $statement->fetchAll(PDO::FETCH_ASSOC);
             if (sizeof($tab) === 1){
-                echo 'Representant : <b class="fw-bold">'.htmlspecialchars($tab[0]["NOMR"]).' de '.htmlspecialchars($tab[0]["VILLE"]).'</b></br>';
-                echo 'Client : <b class="fw-bold">'.htmlspecialchars($tab[0]["NOMC"]).' de '.htmlspecialchars($tab[0]["VILLEC"]).'</b></br>';
-                echo 'Achat : <b class="fw-bold">'.htmlspecialchars($tab[0]["NOMP"]).' '.htmlspecialchars($tab[0]["COUL"]).' ('.htmlspecialchars($tab[0]["PRIX"]).'€)</b></br>';
-                echo 'Nombre : <b class="fw-bold">'.htmlspecialchars($tab[0]["QT"]).'</b></br>';
+                echo 'Representant : <b class="fw-bold">'.htmlspecialchars($tab[0]["NOMR"]).' de '.htmlspecialchars($tab[0]["VILLE"]).'</b><br>';
+                echo 'Client : <b class="fw-bold">'.htmlspecialchars($tab[0]["NOMC"]).' de '.htmlspecialchars($tab[0]["VILLEC"]).'</b><br>';
+                echo 'Achat : <b class="fw-bold">'.htmlspecialchars($tab[0]["NOMP"]).' '.htmlspecialchars($tab[0]["COUL"]).' ('.htmlspecialchars($tab[0]["PRIX"]).'€)</b><br>';
+                echo 'Nombre : <b class="fw-bold">'.htmlspecialchars($tab[0]["QT"]).'</b><br>';
             }
         }
     }
@@ -883,7 +885,7 @@ function getDispoPictures($statut){
 
 function formChagePDP($statut){
     ?>
-    <form action="" method="post">
+    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
         <fieldset>
         <label for="id_photo">Changer de photo de profil : </label>
         <select id="id_photo" name="photo" size="1" class="form-control">
@@ -896,7 +898,7 @@ function formChagePDP($statut){
         ?>
         </select>
         <div class="text-center">
-            <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Changer la photo de profil"/>
+            <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Changer la photo de profil">
         </div>
         </fieldset>
     </form>
@@ -933,13 +935,13 @@ function changePDP($photo, $username, $statut){
 
 function formPasswd(){
     ?>
-    <form action="" method="post">
+    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
         <fieldset>
             <label for="id_password">Changer de mot de passe : </label>
-            <input name="mdp" id="id_password" size="20" class="form-control" type="password" placeholder="aucune modification"/>
+            <input name="mdp" id="id_password" size="20" class="form-control" type="password" placeholder="aucune modification">
         </fieldset>
         <div class="text-center">
-            <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Changer le mot de passe"/>
+            <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Changer le mot de passe">
         </div>
     </form>
     <?php

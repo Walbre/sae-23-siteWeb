@@ -29,7 +29,7 @@ require "fonctions.php";
             if (isset($_GET["search"])){
                 echo '<h2 class="display-5 fw-bold text-center">Recherche : '.htmlspecialchars($_GET["search"]).'</h2>';
                 $rep = getSearch($_GET["search"]);
-                echo '</br>';
+                echo '<br>';
                 afficheLien($rep);
             }
             elseif(isset($_GET["page"])){
