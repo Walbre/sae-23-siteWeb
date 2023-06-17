@@ -1,0 +1,19 @@
+/*  Style du captchat  */
+
+#captchat{
+    display: block;
+    padding: 5%;
+    width: 100%;
+    margin: auto;
+    text-align: center;
+}
+#captchat img{
+    width: 30%;
+}
+.clicked{
+    filter: brightness(0.5) sepia(1) saturate(25%) hue-rotate(190deg);
+}
+
+#captchat img:hover {
+    opacity: 0.8;
+}

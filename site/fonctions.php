@@ -2,6 +2,8 @@
 
 ini_set ('display_errors', 1);
 ini_set ('display_startup_errors', 1);
+ini_set("allow_url_fopen", 1);
+
 error_reporting (E_ALL);
 
 session_start();
@@ -173,9 +175,36 @@ function insert_compte($login, $pass){
 
 
 function genCaptchat(){
-    $url = "http://20.216.129.46/getcaptchat";
+    $url = "http://20.216.129.46:8080/getcaptchat";
     $contents = file_get_contents($url);
-    echo json_decode($contents);
+    $vals = json_decode($contents, true);
+    $_SESSION["captchat_id"] = $vals["id"];
+    echo '<article id="captchat">';
+    $i = 0;
+    foreach($vals["images"] as $img){
+        echo  '<img src="'.$img.'" alt="captchat'.$i.'" onclick="isClicked(this)">'."\n";
+        $i = $i + 1;
+    }
+    ?>
+    <input type="hidden" id="rep" name="captchat" value="000000000">
+    <script>
+        var to_send = "000000000"
+        function isClicked(endroit){
+            index = parseInt(endroit.alt[8])
+            if (endroit.classList.contains("clicked")){
+                endroit.classList.remove("clicked")
+                to_send = to_send.substring(0, index) + "0" + to_send.substring(index+1);
+            }
+            else{
+                endroit.classList.add("clicked")
+                to_send = to_send.substring(0, index) + "1" + to_send.substring(index+1)
+            }
+            elem = document.getElementById("rep").value = to_send
+        }
+    </script>
+</article>
+
+    <?php
 }
 
 function redirect($pas_co, $pas_admin){
@@ -554,6 +583,8 @@ function formSupression(){
                 </select>
             </article>
 
+            <?php genCaptchat(); ?>
+
             <br>
             <div class="text-center">
                 <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Supprimer"/>
@@ -834,18 +865,30 @@ function getProfilPic($username){
     }
 }
 
-function getDispoPictures(){
-    return array_diff(scandir("images/"), [".", ".."]);
+function getDispoPictures($statut){
+    $vals = array_diff(scandir("images/"), [".", ".."]);
+    if ($statut !== "administrateur"){
+        $retour = [];
+        foreach($vals as $val){
+            if (strpos($val, "admin") === false){
+                array_push($retour, $val);
+            }
+        }
+    }
+    else{
+        $retour = $vals;
+    }
+    return $retour;
 }
 
-function formChagePDP(){
+function formChagePDP($statut){
     ?>
     <form action="" method="post">
         <fieldset>
         <label for="id_photo">Changer de photo de profil : </label>
         <select id="id_photo" name="photo" size="1" class="form-control">
         <?php
-            $data = getDispoPictures();
+            $data = getDispoPictures($statut);
             foreach ($data as $val){
                 echo "<option value=".htmlspecialchars($val).'>'.htmlspecialchars($val).'</option>';
             }
@@ -861,6 +904,33 @@ function formChagePDP(){
     <?php
 }
 
+function changePDP($photo, $username, $statut){
+    if (preg_match('/[a-zA-Z0-9]\.png/', $photo) && in_array($photo, getDispoPictures($statut), true)){
+
+        $photo = "images/".$photo;
+
+        $db = new PDO('sqlite:bdd/comptes.sqlite');
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        $requete = "UPDATE comptes SET photo=:photo WHERE login = :nom";
+        $statement = $db->prepare($requete);
+
+        $statement->bindValue(':nom', $username, PDO::PARAM_STR);
+        $statement->bindValue(':photo', $photo, PDO::PARAM_STR);
+        
+        try{
+            $statement->execute();
+        }
+        catch (Exception $e){
+            return "Une erreur est survenu, veuillez rééssayer !";
+        }
+        
+    }
+    else{
+        return "Une erreur est survenu, aucune photo de profil reconnu !";
+    }
+}
+
 function formPasswd(){
     ?>
     <form action="" method="post">
@@ -873,6 +943,24 @@ function formPasswd(){
         </div>
     </form>
     <?php
+}
+
+function changePasswd($new_mdp, $username){
+    $db = new PDO('sqlite:bdd/comptes.sqlite');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $requete = "UPDATE comptes SET motdepasse=:mdp WHERE login = :nom";
+    $statement = $db->prepare($requete);
+
+    $statement->bindValue(':nom', $username, PDO::PARAM_STR);
+    $statement->bindValue(':mdp', $new_mdp, PDO::PARAM_STR);
+    
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        return "Une erreur est survenu, veuillez rééssayer !";
+    }
 }
 
 
