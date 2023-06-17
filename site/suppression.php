@@ -22,33 +22,43 @@ require "fonctions.php";
         if (!empty($_SESSION) && isset($_SESSION["pseudo"])){
             if (isset($_SESSION["statut"]) && $_SESSION["statut"] === "administrateur"){
                 $erreur = "";
+                
+                $captchat = "Erreur du captchat, veuillez le recompléter.";
+                if (!empty($_POST) && isset($_POST["captchat"])){
+                    $captchat = verifycaptchat($_POST["captchat"]);
+                }
 
-                if (!empty($_POST) && isset($_POST["table"])){
-                    if ($_POST["table"] === "CLIENTS"){
-                        if (isset($_POST["client"]) && !($_POST["client"] === "")){
-                            $erreur = supprimerClient($_POST["client"]);
+                if ($captchat === true){
+                    if (!empty($_POST) && isset($_POST["table"])){
+                        if ($_POST["table"] === "CLIENTS"){
+                            if (isset($_POST["client"]) && !($_POST["client"] === "")){
+                                $erreur = supprimerClient($_POST["client"]);
+                            }
                         }
-                    }
 
-                    else if ($_POST["table"] === "REPRESENTANTS"){
-                        if (isset($_POST["repr"]) && !($_POST["repr"] === "")){
-                            $erreur = supprimerRepr($_POST["repr"]);
+                        else if ($_POST["table"] === "REPRESENTANTS"){
+                            if (isset($_POST["repr"]) && !($_POST["repr"] === "")){
+                                $erreur = supprimerRepr($_POST["repr"]);
+                            }
                         }
-                    }
 
-                    else if ($_POST["table"] === "VENTES"){
-                        if (isset($_POST["vente"]) && !($_POST["vente"] === "")){
-                            $array_ventes = explode(",", $_POST["vente"]);
-                            if (sizeof($array_ventes) === 3){
-                                $erreur = supprimerVente($array_ventes[0], $array_ventes[1], $array_ventes[2]);
+                        else if ($_POST["table"] === "VENTES"){
+                            if (isset($_POST["vente"]) && !($_POST["vente"] === "")){
+                                $array_ventes = explode(",", $_POST["vente"]);
+                                if (sizeof($array_ventes) === 3){
+                                    $erreur = supprimerVente($array_ventes[0], $array_ventes[1], $array_ventes[2]);
+                                }
+                            }
+                        }
+                        else if ($_POST["table"] === "PRODUITS"){
+                            if (isset($_POST["prod"]) && !($_POST["prod"] === "")){
+                                $erreur = supprimerProduit($_POST["prod"]);
                             }
                         }
                     }
-                    else if ($_POST["table"] === "PRODUITS"){
-                        if (isset($_POST["prod"]) && !($_POST["prod"] === "")){
-                            $erreur = supprimerProduit($_POST["prod"]);
-                        }
-                    }
+                }
+                else{
+                    $erreur = $captchat;
                 }
 
 
@@ -59,7 +69,7 @@ require "fonctions.php";
 
                 echo '<h1 class="display-5 fw-bold text-center">Bienvenue '.$_SESSION["pseudo"].'</h1>';
 
-                if ($erreur !== "" && $erreur !== null){
+                if (!empty($_POST) && $erreur !== "" && $erreur !== null){
                     echo '<div class="alert alert-danger" role="alert">'.htmlspecialchars($erreur).'</div>';
                 }
 
@@ -104,7 +114,7 @@ require "fonctions.php";
             }
         }
         else{
-            echo '<script>window.location = "connection.php"</script>';
+            echo '<script>window.location = "connexion.php"</script>';
         }
     ?>
 

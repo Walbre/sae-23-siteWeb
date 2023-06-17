@@ -7,3 +7,5 @@
 127.0.0.1 -> getPage([2][1][2])
 127.0.0.1 -> getPage([2][1][2])
 127.0.0.1 -> getPage([2][1][2])
+127.0.0.1 -> ajoutRepr([lazlaalala][sjhfhsdijfisdhifhujsjdfki])
+127.0.0.1 -> supprimerRepr([6])
