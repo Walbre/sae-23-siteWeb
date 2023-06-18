@@ -21,10 +21,9 @@ if (!empty($_GET) && isset($_GET["action"]) && $_GET["action"]=="logout") {
 			}		
             
             
-$verifjs = '<script>verif_mdp();</script>';
-echo $verifjs;
 
-if (!empty($_POST) && isset($_POST['login']) && isset($_POST['pass']) && empty(validate($_POST['login'],$_POST['pass'])) && $verifjs)	{	
+
+if (!empty($_POST) && isset($_POST['login']) && isset($_POST['pass']) && !(valide_cnx($_POST['login'],$_POST['pass'])) && verif_mdp($_POST['pass']))	{	
 	
     
     
