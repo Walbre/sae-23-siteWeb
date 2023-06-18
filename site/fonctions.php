@@ -174,31 +174,31 @@ function verif_mdp($pass){
 
         if (strlen($pass) < 8 || strlen($pass) > 16) {
             $verif = false;
-            echo "<p>Le mot de passe doit être entre 8 à 16 caractères<p>"
+            echo "<p>Le mot de passe doit être entre 8 à 16 caractères<p>";
         }
         elseif (!preg_match("/\d/", $pass)) {
             $verif = false;
-            echo "<p>Le mot de passe doit contenir au moins un caractère<p>"
+            echo "<p>Le mot de passe doit contenir au moins un caractère<p>";
 
         }
         elseif (!preg_match("/[A-Z]/", $pass)) {
             $verif = false;
-            echo "<p>Le mot de passe doit contenir au moins une majuscule<p>"
+            echo "<p>Le mot de passe doit contenir au moins une majuscule<p>";
 
         }
         elseif (!preg_match("/[a-z]/", $pass)) {
             $verif = false;
-            echo "<p>Le mot de passe doit contenir au moins une minuscule<p>"
+            echo "<p>Le mot de passe doit contenir au moins une minuscule<p>";
 
         }
         elseif (!preg_match("/\W/", $pass)) {
             $verif = false;
-            echo "<p>Le mot de passe doit contenir au moins un caractère spécial<p>"
+            echo "<p>Le mot de passe doit contenir au moins un caractère spécial<p>";
  
         }
         elseif (preg_match("/\s/", $pass)) {
             $verif = false;
-            echo "<p>Le mot de passe doit contenir aucun espace<p>"
+            echo "<p>Le mot de passe doit contenir aucun espace<p>";
 
         }
 
