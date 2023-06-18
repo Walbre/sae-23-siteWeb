@@ -14,7 +14,7 @@ function genNavBar($statut, $nom){
     ?>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="index.php">Navbar</a>
+            <a class="navbar-brand" href="#">Navbar</a>
             <!-- Bouton de la navabr en mode réduit -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -44,17 +44,24 @@ function genNavBar($statut, $nom){
                     <?php
                 }
                     ?>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown09" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Français</a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdown09">
+                            <li><a class="dropdown-item" href="#">English</a></li>
+                            <li><a class="dropdown-item" href="#">Francais</a></li>
+                        </ul>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="deconnexion.php">deconnexion</a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
-                    <a href="profil.php">
-                        <li class="nav-item">
+                    <li class="nav-item">
+                        <a href="profil.php">
                             <img src="<?php getProfilPic($nom) ?>" alt="photo de profil" style="height:50px;width:auto;">
                             <br><div class="text-white"><?php echo htmlspecialchars($nom); ?></div>
-                        </li>
-                    </a>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -65,24 +72,18 @@ function genNavBar($statut, $nom){
 }
 
 
-function logout($ses,$stat){
-
-    analyseSQL("decnxComptes",[$ses,$stat]);
-
+function logout(){
     session_destroy();
     $_SESSION = array();
 }
 
 
-function validate_tab($login, $pass){
-
-    
+function validate($login, $pass){
 
     $login = addslashes($login);
     $pass = addslashes($pass);
 
-    $valide = false;
-    $valide_tab = array();
+    $valide = array();
     
 
     $dbc = new PDO('sqlite:bdd/comptes.sqlite');
@@ -105,168 +106,70 @@ function validate_tab($login, $pass){
 
                 if ($tab_login[0]["statut"] === "administrateur"){
 
-                    array_push($valide_tab, $login, $tab_login[0]["statut"]);
-                    analyseSQL("cnxComptes",[$login,"administrateur"]);
-                    $valide = true;
-                    
+                    array_push($valide, $login, $tab_login[0]["statut"]);
                 }
                 else{
-                    array_push($valide_tab, $login, $tab_login[0]["statut"]);
-                    analyseSQL("cnxComptes",[$login,"utilisateur"]);  
-                    $valide = true;
-
+                    array_push($valide, $login, $tab_login[0]["statut"]);  
                 }
             }
-
-        }
-        if($valide === false){
-            analyseSQL("cnxEchoueCompte",[$login]); 
         }
         
     }
-    else{
-            analyseSQL("cnxEchoueCompte",[$login]); 
-        }
-        
-    
 
-    return $valide_tab;
+    return $valide;
 }
 
+?>
+<script>  
+function verif_mdp() {  
+  var pw = document.getElementById("pass").value;  
+  var lettres = /[a-zA-Z]/;
+  var nombres = /[0-9]/;
+  var car =  /[!-*]/;
 
+  var verif = true;
+  if(pw == "" ) {  
+     document.getElementById("message_mdp").innerHTML = "**Mot de passe à remplir";  
+     var verif = false;  
+  }  
+  else if(pw.length < 8) {  
+     document.getElementById("message_mdp").innerHTML = "**Il faut au moins 8 caractères";  
+     var verif = false;
+  }   
+  else if(!lettres.test(pw)){
+    document.getElementById("message_mdp").innerHTML = "**Il faut au moins une lettre majuscule and une lettre minuscule";  
+    var verif = false;
+  }
+  else if(!nombres.test(pw)){
+    document.getElementById("message_mdp").innerHTML = "**Il faut au moins un chiffre";  
+    var verif = false;
+  }
+  else if(!car.test(pw)){
+    document.getElementById("message_mdp").innerHTML = "**Il faut au moins un caractère spécial";  
+    var verif = false;
+  }
+  return verif;
+  } 
+</script>  
 
-function valide_cnx($login, $pass){
-
-    $login = addslashes($login);
-    $pass = addslashes($pass);
-
-
-    $valide = false;
-    
-
-    $dbc = new PDO('sqlite:bdd/comptes.sqlite');
-    $dbc->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-
-    $requete = "SELECT * FROM comptes;";
-
-
-    $res = $dbc->query($requete);
-    $comptes = $res->fetchAll(PDO::FETCH_ASSOC);
-
-    if (!(empty($login) && empty($pass))){
-        foreach($comptes as $compte){
-            if ($compte["login"] === $login && $compte["motdepasse"] === $pass) {
-            $valide = true;
-            }
-            
-        }
-    }
-
-return $valide;
-} 
-    
-function verif_mdp($pass){
-
-    $verif = false;
-
-    if (!(empty($pass))){
-
-        if (strlen($pass) < 8 || strlen($pass) > 16) {
-            $verif = false;
-            echo "<p>Le mot de passe doit être entre 8 à 16 caractères<p>";
-        }
-        elseif (!preg_match("/\d/", $pass)) {
-            $verif = false;
-            echo "<p>Le mot de passe doit contenir au moins un caractère<p>";
-
-        }
-        elseif (!preg_match("/[A-Z]/", $pass)) {
-            $verif = false;
-            echo "<p>Le mot de passe doit contenir au moins une majuscule<p>";
-
-        }
-        elseif (!preg_match("/[a-z]/", $pass)) {
-            $verif = false;
-            echo "<p>Le mot de passe doit contenir au moins une minuscule<p>";
-
-        }
-        elseif (!preg_match("/\W/", $pass)) {
-            $verif = false;
-            echo "<p>Le mot de passe doit contenir au moins un caractère spécial<p>";
- 
-        }
-        elseif (preg_match("/\s/", $pass)) {
-            $verif = false;
-            echo "<p>Le mot de passe doit contenir aucun espace<p>";
-
-        }
-
-        else{
-            $verif = true;
-        } 
-
-    }
-
-    return $verif;
-    
-
-}
-
-
-
-
+<?php
 
 function insert_compte($login, $pass){
 
-    analyseSQL("Ajout compte",[$login]);
-
+    $verif = true;
 
     $dbc = new PDO('sqlite:bdd/comptes.sqlite');
     $dbc->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $requete = "INSERT INTO comptes VALUES ('$login','$pass',utilisateur);";
+    $res = $dbc->query($requete);
 
-    $requete = "INSERT INTO COMPTES VALUES (:login, :pass,'utilisateur','images/photo1.png')";
-    $statement = $dbc->prepare($requete);
+    if (!$res){
+        echo "erreur";
+        $verif = false;
+    }
 
-    $statement->bindValue(':login', $login, PDO::PARAM_STR);
-    $statement->bindValue(':pass', $pass, PDO::PARAM_STR);
-        
-    try{
-        $statement->execute();
-    }
-    catch (Exception $e){
-        $statement = null;
-    }
-    if (!$statement){
-        return "Erreur, veuillez verifier votre entrée puis rééssayer";
-        analyseSQL("ajouterComptes",[$login]); 
-    }
-}
+    return $verif;
 
-
-function verifyCaptchat($res){
-    $data = array("id" => $_SESSION["captchat_id"], "solve" => $res);
-    $options = array(
-        'http' => array(
-            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-            'method'  => 'POST',
-            'content' => http_build_query($data)
-        )
-    );
-    $context  = stream_context_create($options);
-    $result = file_get_contents("http://20.216.129.46:8080/verifycaptchat", false, $context);
-    if ($result){
-        $decoded_res = json_decode($result, true);
-        if ($decoded_res["reponse"] === "true"){
-            return true;
-        }
-        else{
-            return "Erreur : ".$decoded_res["error"];
-        }
-    }
-    else{
-        return "Erreur du captchat, veuillez le recompléter.";
-    }
 }
 
 
@@ -353,28 +256,20 @@ function affiche_tableau($tableau, $head){
     echo '<table class="table"'.">\n";
     echo "<thead>\n<tr>\n";
     foreach ($head as $cle){
-        echo '<th scope="col">'.htmlspecialchars($cle)."</th>";
+        echo '<th>'.htmlspecialchars($cle)."</th>";
     }
     echo "</tr>\n</thead>\n";
     echo "<tbody>\n";
     foreach($tableau as $tab){
         echo "<tr>";
         foreach($tab as $sous_tab){
-            echo '<td scope="row">'.htmlspecialchars($sous_tab)."</td>";
+            echo '<td>'.htmlspecialchars($sous_tab)."</td>";
         }
         echo "</tr>\n";
     }
     echo "</tbody>\n";
     echo "</table>\n";
 }
-
-
-
-
-
-
-
-
 
 function formInsertion(){
     ?>
@@ -392,15 +287,15 @@ function formInsertion(){
             <br>
 
             <article class="REPRESENTANTS">
-                <label for="id_nomr">Nom représentant : </label><input name="nomr" id="id_nomr" size="20" class="form-control"/>
-                <label for="id_viller">Ville représentant : </label><input name="viller" id="id_viller" size="20" class="form-control"/>
+                <label for="id_nomr">Nom représentant : </label><input name="nomr" id="id_nomr" size="20" class="form-control">
+                <label for="id_viller">Ville représentant : </label><input name="viller" id="id_viller" size="20" class="form-control">
             </article>
 
 
             <article class="PRODUITS">
-                <label for="id_nomprod">Nom produit : </label><input name="nom" id="id_nomprod" size="20" class="form-control"/>
-                <label for="id_couleurprod">Couleur : </label><input name="couleur" id="id_couleurprod" size="20" class="form-control"/>
-                <label for="id_prixprod">Prix : </label><input name="prix" id="id_prixprod" size="20" type="number" min="0" class="form-control"/>
+                <label for="id_nomprod">Nom produit : </label><input name="nom" id="id_nomprod" size="20" class="form-control">
+                <label for="id_couleurprod">Couleur : </label><input name="couleur" id="id_couleurprod" size="20" class="form-control">
+                <label for="id_prixprod">Prix : </label><input name="prix" id="id_prixprod" type="number" min="0" class="form-control">
             </article>
 
 
@@ -456,22 +351,23 @@ function formInsertion(){
                         }
                     ?>
                 </select>
-                <label for="id_qtvente">Quantité : </label><input name="qt" id="id_qtvente" size="20" type="number" min="0" class="form-control"/>
+                <label for="id_qtvente">Quantité : </label><input name="qt" id="id_qtvente" type="number" min="0" class="form-control">
 
             </article>
 
 
             <article class="CLIENTS">
-                <label for="id_nomclient">Nom Client : </label><input name="nomc" id="id_nomclient" size="20" class="form-control"/>
-                <label for="id_villeclient">Ville du client : </label><input name="villec" id="id_villeclient" size="20" class="form-control"/>
+                <label for="id_nomclient">Nom Client : </label><input name="nomc" id="id_nomclient" size="20" class="form-control">
+                <label for="id_villeclient">Ville du client : </label><input name="villec" id="id_villeclient" size="20" class="form-control">
             </article>
 
             <br>
             <div class="text-center">
-                <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Insérer"/>
+                <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Insérer">
             </div>
 
         </fieldset>
+        </form>
         <script>
             function changeForm(name){
                 var names = ["REPRESENTANTS", "VENTES", "PRODUITS", "CLIENTS"]
@@ -620,110 +516,6 @@ function get_table_with_id($qui){
 
 
 
-function formModification(){
-
-    ?>
-    
-    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-group">
-        <fieldset>
-            <label for="id_table">Table :</label> 
-            <select id="id_table" name="table" size="1" onchange="changeForm(this)" class="form-control">
-                <option value="REPRESENTANTS">représentants</option>
-                <option value="PRODUITS">produits</option>
-                <option value="VENTES">ventes</option>
-                <option value="CLIENTS">clients</option>
-            </select>
-
-            <br>
-
-            <article class="REPRESENTANTS">
-                <label for="id_repr">Représentant :</label>
-                <select id="id_repr" name="repr" size="1" class="form-control">
-                <?php
-                    $data = get_table_with_id("repr");
-                    foreach ($data as $val){
-                        echo "<option value=".htmlspecialchars($val["NR"]).'>'.htmlspecialchars($val["NOMR"]).' de '.htmlspecialchars($val["VILLE"]).'</option>';
-                    }
-
-                ?>
-                </select>
-            </article>
-
-            <article class="PRODUITS">
-                <label for="id_prod">Produit : </label>
-                <select id="id_prod" name="prod" size="1" class="form-control">
-                <?php
-                    $data = get_table_with_id("prod");
-                    foreach ($data as $val){
-                        echo "<option value=".htmlspecialchars($val["NP"]).'>'.htmlspecialchars($val["NOMP"]).' '.htmlspecialchars($val["COUL"]).' ('.htmlspecialchars($val["PRIX"]).'€)'.'</option>';
-                    }
-
-                ?>
-                </select>
-            </article>
-
-            <article class="VENTES">
-                <label for="id_venter">Représentant :</label>
-                <select id="id_vente" name="vente" size="1" class="form-control">
-                    <?php
-                    $data = get_table_with_id("");
-                    foreach ($data as $val){
-                        echo "<option value=".htmlspecialchars($val["NR"]).','.htmlspecialchars($val["NC"]).','.htmlspecialchars($val["NP"]).'>'.htmlspecialchars($val["NOMR"]).' de '.htmlspecialchars($val["VILLE"]).' -> '.$val["NOMC"].' de '.htmlspecialchars($val["VILLEC"]).' : '.htmlspecialchars($val["NOMP"]).' '.htmlspecialchars($val["COUL"]).' ('.htmlspecialchars($val["PRIX"]).'€) x '.htmlspecialchars($val["QT"]).'</option>';
-                    }
-                    ?>
-                </select>
-
-            </article>
-
-            <article class="CLIENTS">
-            <label for="id_client">Client : </label>
-                <select id="id_client" name="client" size="1" class="form-control">
-                <?php
-                    $data = get_table_with_id("cli");
-                    foreach ($data as $val){
-                        echo "<option value=".htmlspecialchars($val["NC"]).'>'.htmlspecialchars($val["NOMC"]).' '.htmlspecialchars($val["VILLE"]).'</option>';
-                    }
-
-                ?>
-                </select>
-            </article>
-
-            
-            <br>
-            <div class="text-center">
-                <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Supprimer"/>
-            </div>
-
-        </fieldset>
-        <script>
-            function changeForm(name){
-                var names = ["REPRESENTANTS", "VENTES", "PRODUITS", "CLIENTS"]
-                names.splice(names.indexOf(name.value), 1)
-                // invisible les autres
-                names.forEach(nom => Array.from(document.getElementsByClassName(nom)).forEach(elem => elem.style.display = 'none'))
-                Array.from(document.getElementsByClassName(name.value)).forEach(elem => elem.style.display = 'block')
-            }
-            changeForm(document.getElementById('id_table'))
-        </script>
-
-
-<?php
-}
-
-?>
-
-
-
-
-
-
-
-
-
-
-
-
-<?php
 function formSupression(){
 
     ?>
@@ -767,7 +559,7 @@ function formSupression(){
             </article>
 
             <article class="VENTES">
-                <label for="id_venter">Représentant :</label>
+                <label for="id_vente">Représentant :</label>
                 <select id="id_vente" name="vente" size="1" class="form-control">
                     <?php
                     $data = get_table_with_id("");
@@ -796,10 +588,11 @@ function formSupression(){
 
             <br>
             <div class="text-center">
-                <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Supprimer"/>
+                <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Supprimer">
             </div>
 
         </fieldset>
+    </form>
         <script>
             function changeForm(name){
                 var names = ["REPRESENTANTS", "VENTES", "PRODUITS", "CLIENTS"]
@@ -915,9 +708,9 @@ function genSearchBar(){
     <div class="row justify-content-center">
         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="get" class="col-8">
             <div class="input-group mb-3">
-                <input type="text" name="search" class="form-control" placeholder="rechercher" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                <input type="text" name="search" class="form-control" placeholder="rechercher" aria-label="Recipient's username">
                 <div class="input-group-append">
-                    <button type="submit" class="btn btn-outline-secondary" type="button">Rechercher</button>
+                    <button type="submit" class="btn btn-outline-secondary">Rechercher</button>
                 </div>
             </div>
         </form>
@@ -954,11 +747,11 @@ function afficheLien($tab){
     <table class="table" id="id_table">
     <thead>
         <tr>
-        <th scope="col" onclick="trier(this)">#</th>
-        <th scope="col" onclick="trier(this)">Client</th>
-        <th scope="col" onclick="trier(this)">Vendeur</th>
-        <th scope="col" onclick="trier(this)">Produit</th>
-        <th scope="col" onclick="trier(this)">Quantité</th>
+        <th onclick="trier(this)">#</th>
+        <th onclick="trier(this)">Client</th>
+        <th onclick="trier(this)">Vendeur</th>
+        <th onclick="trier(this)">Produit</th>
+        <th onclick="trier(this)">Quantité</th>
         </tr>
     </thead>
     <tbody>
@@ -966,7 +759,7 @@ function afficheLien($tab){
     <?php
     $i = 1;
     foreach($tab as $vals){
-        echo '<tr onclick="'."window.location='"."index.php?page=".$vals["NR"].$vals["NC"].$vals["NP"]."'".'">'."\n".'<td scope="row">'."$i"."</td>\n";
+        echo '<tr onclick="'."window.location='"."index.php?page=".$vals["NR"].$vals["NC"].$vals["NP"]."'".'">'."\n".'<td>'."$i"."</td>\n";
         echo '<td>'.htmlspecialchars($vals["NOMR"]).' de '.htmlspecialchars($vals["VILLE"])."</td>\n<td>".htmlspecialchars($vals["NOMC"]).' de '.htmlspecialchars($vals["VILLEC"])."</td>\n<td>".htmlspecialchars($vals["NOMP"]).' '.htmlspecialchars($vals["COUL"]).' ('.htmlspecialchars($vals["PRIX"])."€)</td>\n<td>".htmlspecialchars($vals["QT"])."</td>\n";
         echo "</tr>\n";
         $i += 1;
@@ -1029,10 +822,10 @@ function getPage($id){
         if ($statement){
             $tab = $statement->fetchAll(PDO::FETCH_ASSOC);
             if (sizeof($tab) === 1){
-                echo 'Representant : <b class="fw-bold">'.htmlspecialchars($tab[0]["NOMR"]).' de '.htmlspecialchars($tab[0]["VILLE"]).'</b></br>';
-                echo 'Client : <b class="fw-bold">'.htmlspecialchars($tab[0]["NOMC"]).' de '.htmlspecialchars($tab[0]["VILLEC"]).'</b></br>';
-                echo 'Achat : <b class="fw-bold">'.htmlspecialchars($tab[0]["NOMP"]).' '.htmlspecialchars($tab[0]["COUL"]).' ('.htmlspecialchars($tab[0]["PRIX"]).'€)</b></br>';
-                echo 'Nombre : <b class="fw-bold">'.htmlspecialchars($tab[0]["QT"]).'</b></br>';
+                echo 'Representant : <b class="fw-bold">'.htmlspecialchars($tab[0]["NOMR"]).' de '.htmlspecialchars($tab[0]["VILLE"]).'</b><br>';
+                echo 'Client : <b class="fw-bold">'.htmlspecialchars($tab[0]["NOMC"]).' de '.htmlspecialchars($tab[0]["VILLEC"]).'</b><br>';
+                echo 'Achat : <b class="fw-bold">'.htmlspecialchars($tab[0]["NOMP"]).' '.htmlspecialchars($tab[0]["COUL"]).' ('.htmlspecialchars($tab[0]["PRIX"]).'€)</b><br>';
+                echo 'Nombre : <b class="fw-bold">'.htmlspecialchars($tab[0]["QT"]).'</b><br>';
             }
         }
     }
@@ -1092,7 +885,7 @@ function getDispoPictures($statut){
 
 function formChagePDP($statut){
     ?>
-    <form action="" method="post">
+    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
         <fieldset>
         <label for="id_photo">Changer de photo de profil : </label>
         <select id="id_photo" name="photo" size="1" class="form-control">
@@ -1105,7 +898,7 @@ function formChagePDP($statut){
         ?>
         </select>
         <div class="text-center">
-            <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Changer la photo de profil"/>
+            <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Changer la photo de profil">
         </div>
         </fieldset>
     </form>
@@ -1142,13 +935,13 @@ function changePDP($photo, $username, $statut){
 
 function formPasswd(){
     ?>
-    <form action="" method="post">
+    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
         <fieldset>
             <label for="id_password">Changer de mot de passe : </label>
-            <input name="mdp" id="id_password" size="20" class="form-control" type="password" placeholder="aucune modification"/>
+            <input name="mdp" id="id_password" size="20" class="form-control" type="password" placeholder="aucune modification">
         </fieldset>
         <div class="text-center">
-            <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Changer le mot de passe"/>
+            <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Changer le mot de passe">
         </div>
     </form>
     <?php
@@ -1178,22 +971,22 @@ function analyseSQL($nom_methode, $parametres){
     foreach($parametres as $param){
         $res = $res."[$param]";
     }
-    $res = $res.")". " --- ". date("Y/m/d h:i:sa")."\n";
+    $res = $res.")\n";
     // recherche de possibles tentatives de XSS et SQLI
     
     $suspect = "";
     foreach($parametres as $param){
         if (strpos($param, "'") !== false){
-            $suspect = $suspect."Parametre suspect : $param, ' trouvé". " --- ". date("Y/m/d h:i:sa")."\n";
+            $suspect = $suspect."Parametre suspect : $param, ' trouvé\n";
         }
         if (strpos($param, '"') !== false){
-            $suspect = $suspect."Parametre suspect : $param, ".'" trouvé'." --- ". date("Y/m/d h:i:sa")."\n";
+            $suspect = $suspect."Parametre suspect : $param, ".'" trouvé'."\n";
         }
         if (strpos($param, "<") !== false){
-            $suspect = $suspect."Parametre suspect : $param, < trouvé". " --- ". date("Y/m/d h:i:sa")."\n";
+            $suspect = $suspect."Parametre suspect : $param, < trouvé\n";
         }
         if (strpos($param, ">") !== false){
-            $suspect = $suspect."Parametre suspect : $param, > trouvé". " --- ". date("Y/m/d h:i:sa")."\n";
+            $suspect = $suspect."Parametre suspect : $param, > trouvé\n";
         }
     }
     if ($suspect !== ""){
