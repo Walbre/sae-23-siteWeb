@@ -8,30 +8,38 @@ require "fonctions.php";
 <html lang="fr">
     <head>
 		<meta charset="utf-8">
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 		<title>register</title>
 	</head>
     <body>
+		<article>
     <h2>Bienvenue sur la page register ! </h2>
     <?php
 if (!empty($_GET) && isset($_GET["action"]) && $_GET["action"]=="logout") {
 				session_destroy();
 				$_SESSION=array();
-			}			
+			}		
+            
+            
 
-if (!empty($_POST) && isset($_POST['login']) && isset($_POST['pass']) && empty(validate($_POST['login'],$_POST['pass'])))	{	
+
+if (!empty($_POST) && isset($_POST['login']) && isset($_POST['pass']) && !(valide_cnx($_POST['login'],$_POST['pass'])) && verif_mdp($_POST['pass']))	{	
 	
     
-    insert_compte($login, $pass);
+    
+    insert_compte($_POST['login'], $_POST['pass']);
 	
 
 }
 
 ?>
 
-<form onsubmit ="return verif_mdp()">  
-    <p><label for="login">Login : </label><input type="text" id="login" name="login" /></p>
-    <p><label for="pass">Mot de Passe : </label><input type = "password" id = "pass" value = ""><span id = "message_mdp" style="color:red"> </span></p>
-    <p><input type="submit" id="submit" name="submit" value="Register" /> <button type = "reset" value = "Reset" >Reset</button></p>
+<form id="cnx" method="post" action="register.php">
+		<p><label for="login">Login : </label><input type="text" id="login" name="login" /></p>
+		<p><label for="pass">Mot de Passe : </label><input type="password" id="pass" name="pass" /></p>
+		<p><input type="submit" id="submit" name="submit" value="Register" /></p>
+		
+	</form>
     
     
 </form>  
@@ -39,5 +47,11 @@ if (!empty($_POST) && isset($_POST['login']) && isset($_POST['pass']) && empty(v
 <form id="cnx" method="post" action="connexion.php">
 		<p><input type="submit" id="submit" name="submit" value="Connexion" /></p>
 </form>
+</article>
 
-    </body>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+</body>
+</html>
