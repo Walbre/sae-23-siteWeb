@@ -72,18 +72,49 @@ function genNavBar($statut, $nom){
 }
 
 
-function logout(){
-    session_destroy();
+function logout($ses,$stat){
+
+    /*
+    Deconnexion du compte 
+
+    En paramètre :
+    $ses : str : le login de l'utilisateur
+    $stat :  str : le statut de l'utilisateur (admin/user)
+
+    Retourne:
+    Rien
+    */
+
+    analyseSQL("decnxComptes",[$ses,$stat]); /*Fonction log */
+
+    /* Destruction de la session */
+    session_destroy(); 
     $_SESSION = array();
 }
 
 
-function validate($login, $pass){
+function validate_tab($login, $pass){
+
+    /*
+    Validation du login et mdp en retournant un tableau
+
+    En paramètre :
+    $login : str : login de l'utilisateur
+    $pass : str : le mot de passe de l'utilisateur
+
+    Retourne:
+    $valide_tab : array : tableau login, mdp et statut
+    Cela retourne un tableau vide si le compte n'existe pas
+
+    */
+
+    
 
     $login = addslashes($login);
     $pass = addslashes($pass);
 
-    $valide = array();
+    $valide = false;
+    $valide_tab = array();
     
 
     $dbc = new PDO('sqlite:bdd/comptes.sqlite');
@@ -100,77 +131,202 @@ function validate($login, $pass){
         foreach($comptes as $compte){
             if ($compte["login"] === $login && $compte["motdepasse"] === $pass) {
 
+                /* Selection du compte qui à le même login et mot de passe */
+
                 $requete_status = "SELECT * FROM comptes WHERE login = '$login' AND motdepasse = '$pass'";
                 $res = $dbc->query($requete_status);
                 $tab_login = $res->fetchAll(PDO::FETCH_ASSOC);
 
                 if ($tab_login[0]["statut"] === "administrateur"){
 
-                    array_push($valide, $login, $tab_login[0]["statut"]);
+                    array_push($valide_tab, $login, $tab_login[0]["statut"]);
+                    analyseSQL("cnxComptes",[$login,"administrateur"]); /* Fonction log*/
+                    $valide = true;
+                    
                 }
                 else{
-                    array_push($valide, $login, $tab_login[0]["statut"]);  
+                    array_push($valide_tab, $login, $tab_login[0]["statut"]);
+                    analyseSQL("cnxComptes",[$login,"utilisateur"]);  /* Fonction log*/
+                    $valide = true;
+
                 }
             }
+
+        }
+        if($valide === false){
+            analyseSQL("cnxEchoueCompte",[$login]); /* Fonction log en cas d'echec*/
         }
         
     }
+    else{
+            analyseSQL("cnxEchoueCompte",[$login]); /* Fonction log en cas d'echec*/
+        }
+        
+    
 
-    return $valide;
+    return $valide_tab;
 }
 
-?>
-<script>  
-function verif_mdp() {  
-  var pw = document.getElementById("pass").value;  
-  var lettres = /[a-zA-Z]/;
-  var nombres = /[0-9]/;
-  var car =  /[!-*]/;
 
-  var verif = true;
-  if(pw == "" ) {  
-     document.getElementById("message_mdp").innerHTML = "**Mot de passe à remplir";  
-     var verif = false;  
-  }  
-  else if(pw.length < 8) {  
-     document.getElementById("message_mdp").innerHTML = "**Il faut au moins 8 caractères";  
-     var verif = false;
-  }   
-  else if(!lettres.test(pw)){
-    document.getElementById("message_mdp").innerHTML = "**Il faut au moins une lettre majuscule and une lettre minuscule";  
-    var verif = false;
-  }
-  else if(!nombres.test(pw)){
-    document.getElementById("message_mdp").innerHTML = "**Il faut au moins un chiffre";  
-    var verif = false;
-  }
-  else if(!car.test(pw)){
-    document.getElementById("message_mdp").innerHTML = "**Il faut au moins un caractère spécial";  
-    var verif = false;
-  }
-  return verif;
-  } 
-</script>  
 
-<?php
+function valide_cnx($login, $pass){
 
-function insert_compte($login, $pass){
+    /*
+    Verification du login et mdp
 
-    $verif = true;
+    En paramètre :
+    $login : str : login de l'utilisateur
+    $pass : str : le mot de passe de l'utilisateur
+
+
+    Retourne:
+    $valide : booleen : retourne vrai si le compte existe, retourne faux dans le cas contraire
+
+
+
+
+
+
+    */
+
+
+    $login = addslashes($login);
+    $pass = addslashes($pass);
+
+
+    $valide = false;
+    
 
     $dbc = new PDO('sqlite:bdd/comptes.sqlite');
     $dbc->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $requete = "INSERT INTO comptes VALUES ('$login','$pass',utilisateur);";
-    $res = $dbc->query($requete);
 
-    if (!$res){
-        echo "erreur";
-        $verif = false;
+
+    /* Selection de tous les comptes */
+
+    $requete = "SELECT * FROM comptes;";
+
+
+    $res = $dbc->query($requete);
+    $comptes = $res->fetchAll(PDO::FETCH_ASSOC);
+
+    if (!(empty($login) && empty($pass))){
+        foreach($comptes as $compte){
+            if ($compte["login"] === $login && $compte["motdepasse"] === $pass) {
+            $valide = true;
+            }
+            
+        }
+    }
+
+return $valide;
+} 
+    
+function verif_mdp($pass){
+
+
+        /*
+    Verification du mot de passe
+
+    En paramètre :
+    $pass : str : le mot de passe de l'utilisateur
+
+    Retourne:
+    $verif : booleen : Retourne vrai si les contraintes sont respectées sinon faux
+
+    */
+
+
+
+    $verif = false;
+
+    if (!(empty($pass))){
+
+        if (strlen($pass) < 8 || strlen($pass) > 16) { /* La taille du mot de passe entre 8 et 16 caractères */
+            $verif = false;
+            echo "<p>Le mot de passe doit être entre 8 à 16 caractères<p>";
+
+        }
+        elseif (!preg_match("/[A-Z]/", $pass)) { /* Le mot de passe doit contenir au moins une majuscule  */
+            $verif = false;
+            echo "<p>Le mot de passe doit contenir au moins une majuscule<p>";
+
+        }
+        elseif (!preg_match("/[a-z]/", $pass)) { /* Le mot de passe doit contenir au moins une minuscule  */
+            $verif = false;
+            echo "<p>Le mot de passe doit contenir au moins une minuscule<p>";
+
+        }
+        elseif (!preg_match("/\W/", $pass)) { /* Le mot de passe doit contenir au moins un caractère spécial */
+            $verif = false;
+            echo "<p>Le mot de passe doit contenir au moins un caractère spécial<p>";
+ 
+        }
+        elseif (preg_match("/\s/", $pass)) { /* Le mot de passe ne doit pas avoir des espaces vides */
+            $verif = false;
+            echo "<p>Le mot de passe doit contenir aucun espace<p>";
+
+        }
+
+        else{
+            $verif = true;
+        } 
+
     }
 
     return $verif;
+    
 
 }
+
+
+
+
+
+function insert_compte($login, $pass){
+
+
+
+            /*
+    Insertion du compte
+
+    En paramètre :
+    $login : str : login de l'utilisateur créé
+    $pass : str : le mot de passe de l'utilisateur créé
+
+    Retourne:
+    Rien
+
+    */
+
+
+
+    analyseSQL("ajouterComptes",[$login]); /* Fonction log */
+
+
+    $dbc = new PDO('sqlite:bdd/comptes.sqlite');
+    $dbc->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+
+    /* Inserstion du compte dans la base de donnée */
+
+    $requete = "INSERT INTO COMPTES VALUES (:login, :pass,'utilisateur','images/photo1.png')";
+    $statement = $dbc->prepare($requete);
+
+    $statement->bindValue(':login', $login, PDO::PARAM_STR);
+    $statement->bindValue(':pass', $pass, PDO::PARAM_STR);
+        
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
+    if (!$statement){
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
+        analyseSQL("ajouterComptesEchec",[$login]); /* Fonction log en cas d'échec */
+    }
+}
+
 
 
 
@@ -514,6 +670,378 @@ function get_table_with_id($qui){
     }
 }
 
+function formeModif(){
+
+    /*
+    Fonction former menu déroulante dynamic pour la modification
+
+    En paramètre :
+    Rien
+
+    Retourne :
+    Rien
+
+    
+    */
+
+?>
+    
+    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-group">
+        <fieldset>
+            <label for="id_table">Table :</label> 
+            <select id="id_table" name="table" size="1" onchange="changeForm(this)" class="form-control">
+                <option value="REPRESENTANTS">représentants</option>
+                <option value="PRODUITS">produits</option>
+                <option value="VENTES">ventes</option>
+                <option value="CLIENTS">clients</option>
+            </select>
+
+            <br>
+
+            <article class="REPRESENTANTS">
+                <label for="id_repr">Représentant :</label>
+                <select id="id_repr" name="repr" size="1" class="form-control">
+                <?php
+                    $data = get_table_with_id("repr");
+                    foreach ($data as $val){
+                        echo "<option value=".htmlspecialchars($val["NR"]).'>'.htmlspecialchars($val["NOMR"]).' de '.htmlspecialchars($val["VILLE"]).'</option>';
+                    }
+
+                ?>
+                </select>
+            </article>
+
+            <article class="PRODUITS">
+                <label for="id_prod">Produit : </label>
+                <select id="id_prod" name="prod" size="1" class="form-control">
+                <?php
+                    $data = get_table_with_id("prod");
+                    foreach ($data as $val){
+                        echo "<option value=".htmlspecialchars($val["NP"]).'>'.htmlspecialchars($val["NOMP"]).' '.htmlspecialchars($val["COUL"]).' ('.htmlspecialchars($val["PRIX"]).'€)'.'</option>';
+                    }
+
+                ?>
+                </select>
+            </article>
+
+            <article class="VENTES">
+                <label for="id_venter">Représentant :</label>
+                <select id="id_vente" name="vente" size="1" class="form-control">
+                    <?php
+                    $data = get_table_with_id("");
+                    foreach ($data as $val){
+                        echo "<option value=".htmlspecialchars($val["NR"]).','.htmlspecialchars($val["NC"]).','.htmlspecialchars($val["NP"]).'>'.htmlspecialchars($val["NOMR"]).' de '.htmlspecialchars($val["VILLE"]).' -> '.$val["NOMC"].' de '.htmlspecialchars($val["VILLEC"]).' : '.htmlspecialchars($val["NOMP"]).' '.htmlspecialchars($val["COUL"]).' ('.htmlspecialchars($val["PRIX"]).'€) x '.htmlspecialchars($val["QT"]).'</option>';
+                    }
+                    ?>
+                </select>
+
+            </article>
+
+            <article class="CLIENTS">
+            <label for="id_client">Client : </label>
+                <select id="id_client" name="client" size="1" class="form-control">
+                <?php
+                    $data = get_table_with_id("cli");
+                    foreach ($data as $val){
+                        echo "<option value=".htmlspecialchars($val["NC"]).'>'.htmlspecialchars($val["NOMC"]).' '.htmlspecialchars($val["VILLE"]).'</option>';
+                    }
+
+                ?>
+                </select>
+            </article>
+                </br>
+                    <h4>Les modifications à faire ci-dessous : </h4>
+                </br>
+
+            <article class="REPRESENTANTS">
+                <label for="id_nomr">Nom représentant : </label><input name="nomr2" id="id_nomr" size="20" class="form-control"/>
+                <label for="id_viller">Ville représentant : </label><input name="viller2" id="id_viller" size="20" class="form-control"/>
+            </article>
+
+
+            <article class="PRODUITS">
+                <label for="id_nomprod">Nom produit : </label><input name="nom2" id="id_nomprod" size="20" class="form-control"/>
+                <label for="id_couleurprod">Couleur : </label><input name="couleur2" id="id_couleurprod" size="20" class="form-control"/>
+                <label for="id_prixprod">Prix : </label><input name="prix2" id="id_prixprod" size="20" type="number" min="0" class="form-control"/>
+            </article>
+
+
+
+
+            <article class="VENTES">
+                <label for="id_venterepr">Représentant :</label>
+                <select id="id_venterepr" name="repr" size="1" class="form-control">
+                    <?php
+                        $db = new PDO('sqlite:bdd/repr.sqlite');
+                        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                        $requete_repr = "SELECT NR as id, NOMR || ' de ' || VILLE AS field FROM REPRESENTANTS";
+
+                        $res = $db->query($requete_repr);
+                        if ($res){
+                            $tab = $res->fetchAll(PDO::FETCH_ASSOC);
+                            foreach($tab as $val){
+                                echo "<option value=".htmlspecialchars($val["id"]).">".htmlspecialchars($val["field"])."</option>\n";
+                            }
+                        }
+                    ?>
+                </select>
+                <label for="id_venteclient">Client :</label>
+                <select id="id_venteclient" name="client" size="1" class="form-control">
+                    <?php
+                        $db = new PDO('sqlite:bdd/repr.sqlite');
+                        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                        $requete_c = "SELECT NC as id, NOMC || ' de ' || VILLE AS field FROM CLIENTS";
+
+                        $res = $db->query($requete_c);
+                        if ($res){
+                            $tab = $res->fetchAll(PDO::FETCH_ASSOC);
+                            foreach($tab as $val){
+                                echo "<option value=".htmlspecialchars($val["id"]).">".htmlspecialchars($val["field"])."</option>\n";
+                            }
+                        }
+                    ?>
+                </select>
+                <label for="id_venteproduit">Produit :</label>
+                <select id="id_venteproduit" name="produit" size="1" class="form-control">
+                    <?php
+                        $db = new PDO('sqlite:bdd/repr.sqlite');
+                        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                        $requete_prod = "SELECT NP as id, NOMP || ' ' || COUL || ' (' || PRIX || '€)' AS field FROM PRODUITS";
+
+                        $res = $db->query($requete_prod);
+                        if ($res){
+                            $tab = $res->fetchAll(PDO::FETCH_ASSOC);
+                            foreach($tab as $val){
+                                echo "<option value=".htmlspecialchars($val["id"]).">".htmlspecialchars($val["field"])."</option>\n";
+                            }
+                        }
+                    ?>
+                </select>
+                <label for="id_qtvente2">Quantité : </label><input name="qt" id="id_qtvente" size="20" type="number" min="0" class="form-control"/>
+
+            </article>
+
+
+            <article class="CLIENTS">
+                <label for="id_nomclient">Nom Client : </label><input name="nomc2" id="id_nomclient" size="20" class="form-control"/>
+                <label for="id_villeclient">Ville du client : </label><input name="villec2" id="id_villeclient" size="20" class="form-control"/>
+
+            </article>          
+            <br>
+            <div class="text-center">
+                <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Modifier"/>
+            </div>
+
+        </fieldset>
+        <script>
+            function changeForm(name){
+                var names = ["REPRESENTANTS", "VENTES", "PRODUITS", "CLIENTS"]
+                names.splice(names.indexOf(name.value), 1)
+                // invisible les autres
+                names.forEach(nom => Array.from(document.getElementsByClassName(nom)).forEach(elem => elem.style.display = 'none'))
+                Array.from(document.getElementsByClassName(name.value)).forEach(elem => elem.style.display = 'block')
+            }
+            changeForm(document.getElementById('id_table'))
+        </script>
+
+
+<?php
+}
+
+
+
+
+function modifClient($nc,$nomc,$ville){
+
+
+             /*
+    Modification du client
+
+    En paramètre :
+    $nc : int: l'ID/ / clé primaire du client à modifier
+    $nomc : str : le nom du client modifié
+    $ville : str : la ville modifiée
+
+    Retourne si echec :
+    Un message d'erreur en cas d'échec
+
+    Retourne:
+    Rien
+
+    */
+
+
+    $db = new PDO('sqlite:bdd/repr.sqlite'); /*appel du fichier SQL*/
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    analyseSQL("modifierClient", [$nc,$nomc,$ville]); /* Fonction log */
+
+
+    /*Mise à jour du client dans la base de donnée (Table CLIENTS )*/
+
+
+    $requete = "UPDATE CLIENTS SET NOMC= :nomc, VILLE= :ville WHERE NC= :nc;";
+    $statement = $db->prepare($requete);
+
+    $statement->bindValue(':nc', $nc, PDO::PARAM_INT);
+    $statement->bindValue(':nomc', $nomc, PDO::PARAM_STR);
+    $statement->bindValue(':ville', $ville, PDO::PARAM_STR);
+
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
+    if (!$statement){
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
+        analyseSQL("modifierClientEchec", [$nc,$nomc,$ville]); /* Fonction log en cas d'échec*/
+    }
+}
+
+
+function modifRepr($nr,$nomr,$ville){
+
+                 /*
+    Modification du représentant
+
+    En paramètre :
+    $nc : int: l'ID/ / clé primaire du représentant à modifier
+    $nomc : str : le nom du représentant modifié
+    $ville : str : la ville modifiée
+
+    Retourne si echec :
+    Un message d'erreur en cas d'échec
+
+    Retourne:
+    Rien
+
+    */
+
+
+    $db = new PDO('sqlite:bdd/repr.sqlite');/*appel du fichier SQL*/
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    analyseSQL("modifierRepresentant", [$nr,$nomr,$ville]);/* Fonction log */
+
+    /*Mise à jour du représentant dans la base de donnée (Table REPRESENTANTS)*/
+
+    $requete = "UPDATE REPRESENTANTS SET NOMR= :nomr, VILLE= :ville WHERE NR= :nr";
+    $statement = $db->prepare($requete);
+
+    $statement->bindValue(':nr', $nr, PDO::PARAM_INT);
+    $statement->bindValue(':nomr', $nomr, PDO::PARAM_STR);
+    $statement->bindValue(':ville', $ville, PDO::PARAM_STR);
+
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
+    if (!$statement){
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
+        analyseSQL("modifierRepresentantEchec", [$nr,$nomr,$ville]);/* Fonction log en cas d'échec */
+    }
+}
+
+
+function modifProduit($np,$nomp,$coul,$prix){
+
+                     /*
+    Modification du produit
+
+    En paramètre :
+    $np : int: l'ID/ / clé primaire du produit à modifier
+    $nomp : str : le nom du produit modifié
+    $coul : str : la couleur modifiée
+    $prix : str : le prix modifié
+
+    Retourne si echec :
+    Un message d'erreur en cas d'échec
+
+    Retourne:
+    Rien
+
+    */
+
+
+    $db = new PDO('sqlite:bdd/repr.sqlite');/*appel du fichier SQL*/
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    analyseSQL("modifierProduit", [$np,$nomp,$coul,$prix]);/* Fonction log */
+
+    /*Mise à jour du produit dans la base de donnée (Table PRODUITS)*/
+
+    $requete = "UPDATE PRODUITS SET NOMP= :nomp, COUL= :coul, PRIX = :prix WHERE NP = :np";
+    $statement = $db->prepare($requete);
+
+    $statement->bindValue(':np', $np, PDO::PARAM_INT);
+    $statement->bindValue(':nomp', $nomp, PDO::PARAM_STR);
+    $statement->bindValue(':coul', $coul, PDO::PARAM_STR);
+    $statement->bindValue(':prix', $prix, PDO::PARAM_INT);
+
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
+    if (!$statement){
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
+        analyseSQL("modifierProduitEchec", [$np,$nomp,$coul,$prix]);/* Fonction log en cas d'échec*/
+    }
+}
+
+function modifVente($nr,$np,$nc,$qt){
+
+                         /*
+    Modification du produit
+
+    En paramètre :
+    $nc : int: l'ID/ / clé primaire du représentant à modifier
+    $np : int: l'ID/ / clé primaire du produit à modifier
+    $np : int: l'ID/ / clé primaire du client à modifier
+    $qt : int: Quantité modifiée de la vente
+
+    Retourne si echec :
+    Un message d'erreur en cas d'échec
+
+    Retourne:
+    Rien
+
+    */
+
+
+    $db = new PDO('sqlite:bdd/repr.sqlite');/*appel du fichier SQL*/
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    analyseSQL("modifierVente", [$nr,$np,$nc,$qt]);/* Fonction log */
+
+    /*Mise à jour des ventes dans la base de donnée (Table VENTES)*/
+
+    $requete = "UPDATE VENTES SET QT = :qt WHERE  NR= :nr AND NP= :np AND NC = :nr";
+    $statement = $db->prepare($requete);
+
+    $statement->bindValue(':nr', $nr, PDO::PARAM_INT);
+    $statement->bindValue(':np', $np, PDO::PARAM_INT);
+    $statement->bindValue(':nc', $nc, PDO::PARAM_INT);
+    $statement->bindValue(':qt', $qt, PDO::PARAM_INT);
+
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
+    if (!$statement){
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
+        analyseSQL("modifierVenteEchec", [$nr,$np,$nc,$qt]);/* Fonction log en cas d'echec*/
+    }
+}
 
 
 function formSupression(){

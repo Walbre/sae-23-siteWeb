@@ -1,4 +1,9 @@
 <?php
+
+/* Page deconnexion
+Author : Morgan MOOTOOSAMY
+*/
+
 if (!empty($_GET) && isset($_GET["source"])){
     show_source("deconnexion.php");
     die();
@@ -16,9 +21,11 @@ require "fonctions.php";
     <title>deconnexion</title>
 </head>
 <body>
+
+<!-- Redirection vers la page connexion -->
 <script>
     
-    window.location = "connexion.php";
+    window.location = "connexion.php"; 
     
     </script>
 
@@ -26,11 +33,12 @@ require "fonctions.php";
 
     <article>
 <?php
+
 $ses = $_SESSION["pseudo"];
 $stat = $_SESSION["statut"];
 
-logout($ses,$stat);
-?>
+logout($ses,$stat); /*deconnexion du compte */
+?> 
 
 
     </article>
