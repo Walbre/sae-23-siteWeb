@@ -373,6 +373,34 @@ function genCaptchat(){
     <?php
 }
 
+
+function verifyCaptchat($res){
+    // fonction qui permet de verifier le captchat avec l'api
+    $data = array("id" => $_SESSION["captchat_id"], "solve" => $res);
+    $options = array(
+        'http' => array(
+            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method'  => 'POST',
+            'content' => http_build_query($data)
+        )
+    );
+    $context  = stream_context_create($options);
+    $result = file_get_contents("http://20.216.129.46:8080/verifycaptchat", false, $context);
+    if ($result){
+        $decoded_res = json_decode($result, true);
+        if ($decoded_res["reponse"] === "true"){
+            return true;
+        }
+        else{
+            return "Erreur : ".$decoded_res["error"];
+        }
+    }
+    else{
+        return "Erreur du captchat, veuillez le recompléter.";
+    }
+}
+
+
 function redirect($pas_co, $pas_admin){
     /* Fonction qui permet de rediriger au bon endroit un utilisateur
     Si l'utilisateur n'est pas connecté, redirection sur la page $pas_co
