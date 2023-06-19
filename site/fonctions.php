@@ -514,6 +514,285 @@ function get_table_with_id($qui){
     }
 }
 
+function formeModif(){
+
+?>
+    
+    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-group">
+        <fieldset>
+            <label for="id_table">Table :</label> 
+            <select id="id_table" name="table" size="1" onchange="changeForm(this)" class="form-control">
+                <option value="REPRESENTANTS">représentants</option>
+                <option value="PRODUITS">produits</option>
+                <option value="VENTES">ventes</option>
+                <option value="CLIENTS">clients</option>
+            </select>
+
+            <br>
+
+            <article class="REPRESENTANTS">
+                <label for="id_repr">Représentant :</label>
+                <select id="id_repr" name="repr" size="1" class="form-control">
+                <?php
+                    $data = get_table_with_id("repr");
+                    foreach ($data as $val){
+                        echo "<option value=".htmlspecialchars($val["NR"]).'>'.htmlspecialchars($val["NOMR"]).' de '.htmlspecialchars($val["VILLE"]).'</option>';
+                    }
+
+                ?>
+                </select>
+            </article>
+
+            <article class="PRODUITS">
+                <label for="id_prod">Produit : </label>
+                <select id="id_prod" name="prod" size="1" class="form-control">
+                <?php
+                    $data = get_table_with_id("prod");
+                    foreach ($data as $val){
+                        echo "<option value=".htmlspecialchars($val["NP"]).'>'.htmlspecialchars($val["NOMP"]).' '.htmlspecialchars($val["COUL"]).' ('.htmlspecialchars($val["PRIX"]).'€)'.'</option>';
+                    }
+
+                ?>
+                </select>
+            </article>
+
+            <article class="VENTES">
+                <label for="id_venter">Représentant :</label>
+                <select id="id_vente" name="vente" size="1" class="form-control">
+                    <?php
+                    $data = get_table_with_id("");
+                    foreach ($data as $val){
+                        echo "<option value=".htmlspecialchars($val["NR"]).','.htmlspecialchars($val["NC"]).','.htmlspecialchars($val["NP"]).'>'.htmlspecialchars($val["NOMR"]).' de '.htmlspecialchars($val["VILLE"]).' -> '.$val["NOMC"].' de '.htmlspecialchars($val["VILLEC"]).' : '.htmlspecialchars($val["NOMP"]).' '.htmlspecialchars($val["COUL"]).' ('.htmlspecialchars($val["PRIX"]).'€) x '.htmlspecialchars($val["QT"]).'</option>';
+                    }
+                    ?>
+                </select>
+
+            </article>
+
+            <article class="CLIENTS">
+            <label for="id_client">Client : </label>
+                <select id="id_client" name="client" size="1" class="form-control">
+                <?php
+                    $data = get_table_with_id("cli");
+                    foreach ($data as $val){
+                        echo "<option value=".htmlspecialchars($val["NC"]).'>'.htmlspecialchars($val["NOMC"]).' '.htmlspecialchars($val["VILLE"]).'</option>';
+                    }
+
+                ?>
+                </select>
+            </article>
+                </br>
+                    <h4>Les modifications à faire ci-dessous : </h4>
+                </br>
+
+            <article class="REPRESENTANTS">
+                <label for="id_nomr">Nom représentant : </label><input name="nomr2" id="id_nomr" size="20" class="form-control"/>
+                <label for="id_viller">Ville représentant : </label><input name="viller2" id="id_viller" size="20" class="form-control"/>
+            </article>
+
+
+            <article class="PRODUITS">
+                <label for="id_nomprod">Nom produit : </label><input name="nom2" id="id_nomprod" size="20" class="form-control"/>
+                <label for="id_couleurprod">Couleur : </label><input name="couleur2" id="id_couleurprod" size="20" class="form-control"/>
+                <label for="id_prixprod">Prix : </label><input name="prix2" id="id_prixprod" size="20" type="number" min="0" class="form-control"/>
+            </article>
+
+
+
+
+            <article class="VENTES">
+                <label for="id_venterepr">Représentant :</label>
+                <select id="id_venterepr" name="repr" size="1" class="form-control">
+                    <?php
+                        $db = new PDO('sqlite:bdd/repr.sqlite');
+                        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                        $requete_repr = "SELECT NR as id, NOMR || ' de ' || VILLE AS field FROM REPRESENTANTS";
+
+                        $res = $db->query($requete_repr);
+                        if ($res){
+                            $tab = $res->fetchAll(PDO::FETCH_ASSOC);
+                            foreach($tab as $val){
+                                echo "<option value=".htmlspecialchars($val["id"]).">".htmlspecialchars($val["field"])."</option>\n";
+                            }
+                        }
+                    ?>
+                </select>
+                <label for="id_venteclient">Client :</label>
+                <select id="id_venteclient" name="client" size="1" class="form-control">
+                    <?php
+                        $db = new PDO('sqlite:bdd/repr.sqlite');
+                        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                        $requete_c = "SELECT NC as id, NOMC || ' de ' || VILLE AS field FROM CLIENTS";
+
+                        $res = $db->query($requete_c);
+                        if ($res){
+                            $tab = $res->fetchAll(PDO::FETCH_ASSOC);
+                            foreach($tab as $val){
+                                echo "<option value=".htmlspecialchars($val["id"]).">".htmlspecialchars($val["field"])."</option>\n";
+                            }
+                        }
+                    ?>
+                </select>
+                <label for="id_venteproduit">Produit :</label>
+                <select id="id_venteproduit" name="produit" size="1" class="form-control">
+                    <?php
+                        $db = new PDO('sqlite:bdd/repr.sqlite');
+                        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                        $requete_prod = "SELECT NP as id, NOMP || ' ' || COUL || ' (' || PRIX || '€)' AS field FROM PRODUITS";
+
+                        $res = $db->query($requete_prod);
+                        if ($res){
+                            $tab = $res->fetchAll(PDO::FETCH_ASSOC);
+                            foreach($tab as $val){
+                                echo "<option value=".htmlspecialchars($val["id"]).">".htmlspecialchars($val["field"])."</option>\n";
+                            }
+                        }
+                    ?>
+                </select>
+                <label for="id_qtvente2">Quantité : </label><input name="qt" id="id_qtvente" size="20" type="number" min="0" class="form-control"/>
+
+            </article>
+
+
+            <article class="CLIENTS">
+                <label for="id_nomclient">Nom Client : </label><input name="nomc2" id="id_nomclient" size="20" class="form-control"/>
+                <label for="id_villeclient">Ville du client : </label><input name="villec2" id="id_villeclient" size="20" class="form-control"/>
+
+            </article>          
+            <br>
+            <div class="text-center">
+                <input type="submit" class="btn btn-primary btn-customized justify-content-center" value="Modifier"/>
+            </div>
+
+        </fieldset>
+        <script>
+            function changeForm(name){
+                var names = ["REPRESENTANTS", "VENTES", "PRODUITS", "CLIENTS"]
+                names.splice(names.indexOf(name.value), 1)
+                // invisible les autres
+                names.forEach(nom => Array.from(document.getElementsByClassName(nom)).forEach(elem => elem.style.display = 'none'))
+                Array.from(document.getElementsByClassName(name.value)).forEach(elem => elem.style.display = 'block')
+            }
+            changeForm(document.getElementById('id_table'))
+        </script>
+
+
+<?php
+}
+
+
+
+
+function modifClient($nc,$nomc,$ville){
+
+
+    $db = new PDO('sqlite:bdd/repr.sqlite');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    analyseSQL("modifierClient", [$nc,$nomc,$ville]);
+
+    $requete = "UPDATE CLIENTS SET NOMC= :nomc, VILLE= :ville WHERE NC= :nc;";
+    $statement = $db->prepare($requete);
+
+    $statement->bindValue(':nc', $nc, PDO::PARAM_INT);
+    $statement->bindValue(':nomc', $nomc, PDO::PARAM_STR);
+    $statement->bindValue(':ville', $ville, PDO::PARAM_STR);
+
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
+    if (!$statement){
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
+    }
+}
+
+
+function modifRepr($nr,$nomr,$ville){
+
+
+    $db = new PDO('sqlite:bdd/repr.sqlite');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    analyseSQL("modifierRepresentant", [$nr,$nomr,$ville]);
+
+    $requete = "UPDATE REPRESENTANTS SET NOMR= :nomr, VILLE= :ville WHERE NR= :nr";
+    $statement = $db->prepare($requete);
+
+    $statement->bindValue(':nr', $nr, PDO::PARAM_INT);
+    $statement->bindValue(':nomr', $nomr, PDO::PARAM_STR);
+    $statement->bindValue(':ville', $ville, PDO::PARAM_STR);
+
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
+    if (!$statement){
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
+    }
+}
+
+
+function modifProduit($np,$nomp,$coul,$prix){
+
+
+    $db = new PDO('sqlite:bdd/repr.sqlite');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    analyseSQL("modifierProduit", [$np,$nomp,$coul,$prix]);
+
+    $requete = "UPDATE PRODUITS SET NOMP= :nomp, COUL= :coul, PRIX = :prix WHERE NP = :np";
+    $statement = $db->prepare($requete);
+
+    $statement->bindValue(':np', $np, PDO::PARAM_INT);
+    $statement->bindValue(':nomp', $nomp, PDO::PARAM_STR);
+    $statement->bindValue(':coul', $coul, PDO::PARAM_STR);
+    $statement->bindValue(':prix', $prix, PDO::PARAM_INT);
+
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
+    if (!$statement){
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
+    }
+}
+
+function modifVente($nr,$np,$nc,$qt){
+
+
+    $db = new PDO('sqlite:bdd/repr.sqlite');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    analyseSQL("modifierVente", [$nr,$np,$nc,$qt]);
+
+    $requete = "UPDATE VENTES SET QT = :qt WHERE  NR= :nr AND NP= :np AND NC = :nr";
+    $statement = $db->prepare($requete);
+
+    $statement->bindValue(':nr', $nr, PDO::PARAM_INT);
+    $statement->bindValue(':np', $np, PDO::PARAM_INT);
+    $statement->bindValue(':nc', $nc, PDO::PARAM_INT);
+    $statement->bindValue(':qt', $qt, PDO::PARAM_INT);
+
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
+    if (!$statement){
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
+    }
+}
 
 
 function formSupression(){
