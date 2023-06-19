@@ -1,4 +1,9 @@
 <?php
+
+/* Page modification
+Author : Morgan MOOTOOSAMY
+*/
+
 if (!empty($_GET) && isset($_GET["source"])){
     show_source("modification.php");
     die();
@@ -18,7 +23,7 @@ require "fonctions.php";
 
 <?php
         if (!empty($_SESSION) && isset($_SESSION["pseudo"])){
-            if (isset($_SESSION["statut"]) && $_SESSION["statut"] === "administrateur"){
+            if (isset($_SESSION["statut"]) && $_SESSION["statut"] === "administrateur"){ /* Verification du statut, si admin */
                 $erreur = "";
 
 
@@ -27,20 +32,20 @@ require "fonctions.php";
                     if ($_POST["table"] === "CLIENTS"){
                         if (isset($_POST["nomc2"]) && isset($_POST["villec2"]) && isset($_POST["client"]) && !($_POST["nomc2"] === "") && !($_POST["villec2"] === "") && !($_POST["client"] === "") && !($_POST["nomc2"] === 0) && !($_POST["villec2"] === 0)){
 
-                            $erreur = modifClient($_POST["client"],$_POST["nomc2"], $_POST["villec2"]);
+                            $erreur = modifClient($_POST["client"],$_POST["nomc2"], $_POST["villec2"]); /* Modification du client */
                         }
                     }
 
                     else if ($_POST["table"] === "REPRESENTANTS"){
                         if (isset($_POST["nomr2"]) && isset($_POST["viller2"]) && !($_POST["nomr2"] === "" && isset($_POST["repr"]) && !($_POST["repr"] === ""))){
-                            $erreur = modifRepr($_POST["repr"],$_POST["nomr2"], $_POST["viller2"]);
+                            $erreur = modifRepr($_POST["repr"],$_POST["nomr2"], $_POST["viller2"]); /* Modification du représentant */
                         }
                     }
 
                     else if ($_POST["table"] === "VENTES"){
                         if (isset($_POST["repr"]) && isset($_POST["client"]) && isset($_POST["produit"]) && isset($_POST["qt"])){
                             if (!($_POST["repr"] === "") && !($_POST["client"] === "") && !($_POST["produit"] === "") && !($_POST["qt"] === "")){
-                                $erreur = modifVente($_POST["repr"], $_POST["produit"],$_POST["client"], $_POST["qt"]);
+                                $erreur = modifVente($_POST["repr"], $_POST["produit"],$_POST["client"], $_POST["qt"]); /* Modification des ventes */
                             }
                             
                         }
@@ -48,7 +53,7 @@ require "fonctions.php";
                     else if ($_POST["table"] === "PRODUITS"){
                         if (isset($_POST["nom2"]) && isset($_POST["couleur2"]) && isset($_POST["prix2"]) && isset($_POST["prod"]) && !($_POST["prod"] === "")){
                             if (!($_POST["nom2"] === "") && !($_POST["couleur2"] === "") && !($_POST["prix2"] === "")){
-                                $erreur = modifProduit($_POST["prod"],$_POST["nom2"], $_POST["couleur2"], $_POST["prix2"]);
+                                $erreur = modifProduit($_POST["prod"],$_POST["nom2"], $_POST["couleur2"], $_POST["prix2"]); /* Modification du produit */
                             }
                             
                         }
@@ -103,7 +108,7 @@ require "fonctions.php";
             }
         }
         else{
-            redirect("index.php", "conexion.php");
+            redirect("index.php", "conexion.php"); /* Redirection vers la page connexion si la session n'existe pas */
         }
     ?>
         <?php genFooter(); ?>

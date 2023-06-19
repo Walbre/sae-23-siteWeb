@@ -1,5 +1,9 @@
 <?php
 
+/* Page connexion
+Author : Morgan MOOTOOSAMY
+*/
+
 require "fonctions.php";
 
 ?>
@@ -19,21 +23,24 @@ require "fonctions.php";
 <article>
 <h2>Bienvenue sur la page connexion ! </h2>	
 <?php
+
+/* Verification si une session éxiste */
 if (!empty($_GET) && isset($_GET["action"]) && $_GET["action"]=="logout") {
 				session_destroy();
 				$_SESSION=array();
 			}			
 
+/*Verification des saisies*/
 if (!empty($_POST) && isset($_POST['login']) && isset($_POST['pass']) && valide_cnx($_POST['login'],$_POST['pass']))	{	
 	
 	$tab = validate_tab($_POST['login'],$_POST['pass']);
 
-	$_SESSION["pseudo"] = $tab[0];
-	$_SESSION["statut"] = $tab[1];
+	$_SESSION["pseudo"] = $tab[0]; /*login */
+	$_SESSION["statut"] = $tab[1]; /*admin ou utilisateur */
 
 
 
-	echo '<script>document.location.replace("index.php")</script>';
+	echo '<script>document.location.replace("index.php")</script>'; /*redirection vers la page index */
 	    			
 
 	

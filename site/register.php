@@ -1,5 +1,9 @@
 <?php
 
+/* Page register
+Author : Morgan MOOTOOSAMY
+*/
+
 require "fonctions.php";
 
 ?>
@@ -15,6 +19,7 @@ require "fonctions.php";
 		<article>
     <h2>Bienvenue sur la page register ! </h2>
     <?php
+	/* Verification si une session éxiste */
 if (!empty($_GET) && isset($_GET["action"]) && $_GET["action"]=="logout") {
 				session_destroy();
 				$_SESSION=array();
@@ -22,27 +27,25 @@ if (!empty($_GET) && isset($_GET["action"]) && $_GET["action"]=="logout") {
             
             
 
-
+/* Verification du login et mdp */
 if (!empty($_POST) && isset($_POST['login']) && isset($_POST['pass']) && !(valide_cnx($_POST['login'],$_POST['pass'])) && verif_mdp($_POST['pass']))	{	
 	
     
     
-    insert_compte($_POST['login'], $_POST['pass']);
+    insert_compte($_POST['login'], $_POST['pass']); /* Insesrtion du compte*/
 	
 
 }
 
 ?>
 
-<form id="cnx" method="post" action="register.php">
+<form id="rgs" method="post" action="register.php">
 		<p><label for="login">Login : </label><input type="text" id="login" name="login" /></p>
 		<p><label for="pass">Mot de Passe : </label><input type="password" id="pass" name="pass" /></p>
-		<p><input type="submit" id="submit" name="submit" value="Register" /></p>
+		<p><input type="submit" id="submit_reg" name="submit_reg" value="Register" /></p>
 		
 	</form>
     
-    
-</form>  
 
 <form id="cnx" method="post" action="connexion.php">
 		<p><input type="submit" id="submit" name="submit" value="Connexion" /></p>
