@@ -72,18 +72,24 @@ function genNavBar($statut, $nom){
 }
 
 
-function logout(){
+function logout($ses,$stat){
+
+    analyseSQL("decnxComptes",[$ses,$stat]);
+
     session_destroy();
     $_SESSION = array();
 }
 
 
-function validate($login, $pass){
+function validate_tab($login, $pass){
+
+    
 
     $login = addslashes($login);
     $pass = addslashes($pass);
 
-    $valide = array();
+    $valide = false;
+    $valide_tab = array();
     
 
     $dbc = new PDO('sqlite:bdd/comptes.sqlite');
@@ -106,71 +112,144 @@ function validate($login, $pass){
 
                 if ($tab_login[0]["statut"] === "administrateur"){
 
-                    array_push($valide, $login, $tab_login[0]["statut"]);
+                    array_push($valide_tab, $login, $tab_login[0]["statut"]);
+                    analyseSQL("cnxComptes",[$login,"administrateur"]);
+                    $valide = true;
+                    
                 }
                 else{
-                    array_push($valide, $login, $tab_login[0]["statut"]);  
+                    array_push($valide_tab, $login, $tab_login[0]["statut"]);
+                    analyseSQL("cnxComptes",[$login,"utilisateur"]);  
+                    $valide = true;
+
                 }
             }
+
+        }
+        if($valide === false){
+            analyseSQL("cnxEchoueCompte",[$login]); 
         }
         
     }
+    else{
+            analyseSQL("cnxEchoueCompte",[$login]); 
+        }
+        
+    
 
-    return $valide;
+    return $valide_tab;
 }
 
-?>
-<script>  
-function verif_mdp() {  
-  var pw = document.getElementById("pass").value;  
-  var lettres = /[a-zA-Z]/;
-  var nombres = /[0-9]/;
-  var car =  /[!-*]/;
 
-  var verif = true;
-  if(pw == "" ) {  
-     document.getElementById("message_mdp").innerHTML = "**Mot de passe à remplir";  
-     var verif = false;  
-  }  
-  else if(pw.length < 8) {  
-     document.getElementById("message_mdp").innerHTML = "**Il faut au moins 8 caractères";  
-     var verif = false;
-  }   
-  else if(!lettres.test(pw)){
-    document.getElementById("message_mdp").innerHTML = "**Il faut au moins une lettre majuscule and une lettre minuscule";  
-    var verif = false;
-  }
-  else if(!nombres.test(pw)){
-    document.getElementById("message_mdp").innerHTML = "**Il faut au moins un chiffre";  
-    var verif = false;
-  }
-  else if(!car.test(pw)){
-    document.getElementById("message_mdp").innerHTML = "**Il faut au moins un caractère spécial";  
-    var verif = false;
-  }
-  return verif;
-  } 
-</script>  
 
-<?php
+function valide_cnx($login, $pass){
 
-function insert_compte($login, $pass){
+    $login = addslashes($login);
+    $pass = addslashes($pass);
 
-    $verif = true;
+
+    $valide = false;
+    
 
     $dbc = new PDO('sqlite:bdd/comptes.sqlite');
     $dbc->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $requete = "INSERT INTO comptes VALUES ('$login','$pass',utilisateur);";
-    $res = $dbc->query($requete);
 
-    if (!$res){
-        echo "erreur";
-        $verif = false;
+
+    $requete = "SELECT * FROM comptes;";
+
+
+    $res = $dbc->query($requete);
+    $comptes = $res->fetchAll(PDO::FETCH_ASSOC);
+
+    if (!(empty($login) && empty($pass))){
+        foreach($comptes as $compte){
+            if ($compte["login"] === $login && $compte["motdepasse"] === $pass) {
+            $valide = true;
+            }
+            
+        }
+    }
+
+return $valide;
+} 
+    
+function verif_mdp($pass){
+
+    $verif = false;
+
+    if (!(empty($pass))){
+
+        if (strlen($pass) < 8 || strlen($pass) > 16) {
+            $verif = false;
+            echo "<p>Le mot de passe doit être entre 8 à 16 caractères<p>";
+        }
+        elseif (!preg_match("/\d/", $pass)) {
+            $verif = false;
+            echo "<p>Le mot de passe doit contenir au moins un caractère<p>";
+
+        }
+        elseif (!preg_match("/[A-Z]/", $pass)) {
+            $verif = false;
+            echo "<p>Le mot de passe doit contenir au moins une majuscule<p>";
+
+        }
+        elseif (!preg_match("/[a-z]/", $pass)) {
+            $verif = false;
+            echo "<p>Le mot de passe doit contenir au moins une minuscule<p>";
+
+        }
+        elseif (!preg_match("/\W/", $pass)) {
+            $verif = false;
+            echo "<p>Le mot de passe doit contenir au moins un caractère spécial<p>";
+ 
+        }
+        elseif (preg_match("/\s/", $pass)) {
+            $verif = false;
+            echo "<p>Le mot de passe doit contenir aucun espace<p>";
+
+        }
+
+        else{
+            $verif = true;
+        } 
+
     }
 
     return $verif;
+    
 
 }
+
+
+
+
+
+function insert_compte($login, $pass){
+
+    analyseSQL("Ajout compte",[$login]);
+
+
+    $dbc = new PDO('sqlite:bdd/comptes.sqlite');
+    $dbc->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $requete = "INSERT INTO COMPTES VALUES (:login, :pass,'utilisateur','images/photo1.png')";
+    $statement = $dbc->prepare($requete);
+
+    $statement->bindValue(':login', $login, PDO::PARAM_STR);
+    $statement->bindValue(':pass', $pass, PDO::PARAM_STR);
+        
+    try{
+        $statement->execute();
+    }
+    catch (Exception $e){
+        $statement = null;
+    }
+    if (!$statement){
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
+        analyseSQL("ajouterComptes",[$login]); 
+    }
+}
+
 
 
 
