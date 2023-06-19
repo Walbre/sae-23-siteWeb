@@ -49,13 +49,6 @@ require "fonctions.php";
 
         echo '<h2 class="display-5 fw-bold text-center">Bienvenue '.htmlspecialchars($_SESSION["pseudo"]).'</h2>';
 
-        ?>
-        <article>
-            <p>rest a faire une section pour changer la pdp avec un form, une secton pour changer le mdp, puis la back pour ca, pas oublier de passer en statements tout le reste de la back</p>
-        </article>
-
-        <?php
-
         formChagePDP($_SESSION["statut"]);
         formPasswd();
 
