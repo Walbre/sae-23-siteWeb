@@ -1,15 +1,25 @@
 <?php
 
-ini_set ('display_errors', 1);
-ini_set ('display_startup_errors', 1);
+// visualisation des erreurs
+// ini_set ('display_errors', 1);
+// ini_set ('display_startup_errors', 1);
+// error_reporting (E_ALL);
+
+// autorisation des requetes pour le captcha
 ini_set("allow_url_fopen", 1);
 
-error_reporting (E_ALL);
-
+// création des sessions, utilisé uniquement dans cette page, comme elle ait incul dans toutes les autres
 session_start();
 
 
 function genNavBar($statut, $nom){
+    /*
+    Fonctionn qui permet de générer la NavBar; elle prend en parametre :
+    $statut => si "administrateur", alors accès à insertion, modification et suppression
+    sinon seulement accès au profil, la déconexiion et la pahe index
+
+    $nom => le nom à afficher en dessous de la photo de profil
+    */
 
     ?>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -44,13 +54,6 @@ function genNavBar($statut, $nom){
                     <?php
                 }
                     ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="dropdown09" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Français</a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdown09">
-                            <li><a class="dropdown-item" href="#">English</a></li>
-                            <li><a class="dropdown-item" href="#">Francais</a></li>
-                        </ul>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="deconnexion.php">deconnexion</a>
                     </li>
@@ -331,16 +334,23 @@ function insert_compte($login, $pass){
 
 
 function genCaptchat(){
+    /*
+    Fonction qui permet de générer le captcha à partir de l'api python que j'ai créé pour l'occasion
+    */
+    
+    // récuperation des images
     $url = "http://20.216.129.46:8080/getcaptchat";
     $contents = file_get_contents($url);
     $vals = json_decode($contents, true);
     $_SESSION["captchat_id"] = $vals["id"];
+    // affichage des images
     echo '<article id="captchat">';
     $i = 0;
     foreach($vals["images"] as $img){
         echo  '<img src="'.$img.'" alt="captchat'.$i.'" onclick="isClicked(this)">'."\n";
         $i = $i + 1;
     }
+    // génération du formulaire
     ?>
     <input type="hidden" id="rep" name="captchat" value="000000000">
     <script>
@@ -364,6 +374,11 @@ function genCaptchat(){
 }
 
 function redirect($pas_co, $pas_admin){
+    /* Fonction qui permet de rediriger au bon endroit un utilisateur
+    Si l'utilisateur n'est pas connecté, redirection sur la page $pas_co
+    SI l'utilisateur n'est pas adminstrateur redirection sur la page $pas_admin
+    Si $pas_admin est null => pas de redirection en cas de compte utilisateur
+    */
     if (!empty($_SESSION) && isset($_SESSION["statut"])){
         if (!is_null($pas_admin) && $_SESSION["statut"] !== "administrateur"){
             echo "<script>window.location = 'index.php'</script>";
@@ -375,6 +390,12 @@ function redirect($pas_co, $pas_admin){
 }
 
 function get_table($qui){
+    /* Fonction qui permet de récuperer la table en fonction de $qui, pour l'afficher comme tableau dans insertion et suppression
+    si $qui = repr => affichage de la table representants
+    si $qui = prod => affichage de la table produits
+    si $qui = cli => affichage de la table clients
+    sinon affichage de toutes les tables avec des jointures
+    */
 
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -409,12 +430,18 @@ function get_table($qui){
 
 
 function affiche_tableau($tableau, $head){
+    /* Fonction qui permet d'afficher un tableau avec le style bootstrap
+    $tableau est un tableau qui a été généré avec SQL
+    $head est une liste avec le nom de chqaue colonne
+    */
     echo '<table class="table"'.">\n";
+    // génération des noms de colonnes
     echo "<thead>\n<tr>\n";
     foreach ($head as $cle){
         echo '<th>'.htmlspecialchars($cle)."</th>";
     }
     echo "</tr>\n</thead>\n";
+    // génération du corp du tableau
     echo "<tbody>\n";
     foreach($tableau as $tab){
         echo "<tr>";
@@ -428,6 +455,7 @@ function affiche_tableau($tableau, $head){
 }
 
 function formInsertion(){
+    /* Génération du formulaire pour l'insertion */
     ?>
 
     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-group">
@@ -459,6 +487,7 @@ function formInsertion(){
                 <label for="id_venterepr">Représentant :</label>
                 <select id="id_venterepr" name="repr" size="1" class="form-control">
                     <?php
+                        // récuperation dynamique des noms des vendeurs
                         $db = new PDO('sqlite:bdd/repr.sqlite');
                         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -476,6 +505,7 @@ function formInsertion(){
                 <label for="id_venteclient">Client :</label>
                 <select id="id_venteclient" name="client" size="1" class="form-control">
                     <?php
+                        // récuperation dynamique des noms des clients
                         $db = new PDO('sqlite:bdd/repr.sqlite');
                         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -493,6 +523,7 @@ function formInsertion(){
                 <label for="id_venteproduit">Produit :</label>
                 <select id="id_venteproduit" name="produit" size="1" class="form-control">
                     <?php
+                        // récuperation dynamique des noms des produits
                         $db = new PDO('sqlite:bdd/repr.sqlite');
                         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -542,11 +573,14 @@ function formInsertion(){
 
 
 function ajoutClient($nom, $ville){
+    /* Ajout d'un client dans la table à partir de son nom et de sa ville */
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // log de la requete sql
     analyseSQL("ajoutClient", [$nom, $ville]);
 
+    // utilisation de statements car c'est la méthode recommandé pour bloquer les injections SQL
     $requete = "INSERT INTO CLIENTS(NOMC, VILLE) VALUES (:nom, :ville)";
     $statement = $db->prepare($requete);
 
@@ -566,11 +600,14 @@ function ajoutClient($nom, $ville){
 
 
 function ajoutRepr($nom, $ville){
+    /* Ajout d'un représentant dans la table à partir de son nom et de sa ville */
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // log de la requete sql
     analyseSQL("ajoutRepr", [$nom, $ville]);
 
+    // utilisation de statements car c'est la méthode recommandé pour bloquer les injections SQL
     $requete = "INSERT INTO REPRESENTANTS(NOMR, VILLE) VALUES (:nom, :ville)";
     $statement = $db->prepare($requete);
 
@@ -591,13 +628,14 @@ function ajoutRepr($nom, $ville){
 
 
 function ajoutProduit($nom, $couleur, $prix){
+    /* Ajout d'un produit dans la table à partir de son nom, sa couleur et son prix */
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // log de la requete sql
     analyseSQL("ajoutProduit", [$nom, $couleur, $prix]);
 
     $requete = "INSERT INTO PRODUITS(NOMP, COUL, PRIX) VALUES (:nom, :couleur, :prix)";
-
     $statement = $db->prepare($requete);
 
     $statement->bindValue(':nom', $nom, PDO::PARAM_STR);
@@ -618,9 +656,11 @@ function ajoutProduit($nom, $couleur, $prix){
 
 
 function ajoutVente($nr, $nc, $np, $quantite){
+    /* Ajout d'une vente dans la table à partir de l'id du client, de l'id du représentant, de l'id du produit et du prix */
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // log de la requete sql
     analyseSQL("ajoutVente", [$nr, $nc, $np, $quantite]);
 
     $requete = "INSERT INTO VENTES(NR, NC, NP, QT) VALUES (:nr, :nc, :np, :quantite)";
@@ -645,6 +685,7 @@ function ajoutVente($nr, $nc, $np, $quantite){
 
 
 function get_table_with_id($qui){
+    /* Cette fonction est similaire à get_table, à l'exception que celle-ci renvoi aussi les identifiants */
 
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -1045,6 +1086,7 @@ function modifVente($nr,$np,$nc,$qt){
 
 
 function formSupression(){
+    /* Génération du formulaire de suppression */
 
     ?>
     
@@ -1064,6 +1106,7 @@ function formSupression(){
                 <label for="id_repr">Représentant :</label>
                 <select id="id_repr" name="repr" size="1" class="form-control">
                 <?php
+                    // formulaire dynamique pour les représentants
                     $data = get_table_with_id("repr");
                     foreach ($data as $val){
                         echo "<option value=".htmlspecialchars($val["NR"]).'>'.htmlspecialchars($val["NOMR"]).' de '.htmlspecialchars($val["VILLE"]).'</option>';
@@ -1077,6 +1120,7 @@ function formSupression(){
                 <label for="id_prod">Produit : </label>
                 <select id="id_prod" name="prod" size="1" class="form-control">
                 <?php
+                    // formulaire dynamique pour les produits
                     $data = get_table_with_id("prod");
                     foreach ($data as $val){
                         echo "<option value=".htmlspecialchars($val["NP"]).'>'.htmlspecialchars($val["NOMP"]).' '.htmlspecialchars($val["COUL"]).' ('.htmlspecialchars($val["PRIX"]).'€)'.'</option>';
@@ -1090,10 +1134,11 @@ function formSupression(){
                 <label for="id_vente">Représentant :</label>
                 <select id="id_vente" name="vente" size="1" class="form-control">
                     <?php
-                    $data = get_table_with_id("");
-                    foreach ($data as $val){
-                        echo "<option value=".htmlspecialchars($val["NR"]).','.htmlspecialchars($val["NC"]).','.htmlspecialchars($val["NP"]).'>'.htmlspecialchars($val["NOMR"]).' de '.htmlspecialchars($val["VILLE"]).' -> '.$val["NOMC"].' de '.htmlspecialchars($val["VILLEC"]).' : '.htmlspecialchars($val["NOMP"]).' '.htmlspecialchars($val["COUL"]).' ('.htmlspecialchars($val["PRIX"]).'€) x '.htmlspecialchars($val["QT"]).'</option>';
-                    }
+                    // formulaire dynamique pour les ventes
+                        $data = get_table_with_id("");
+                        foreach ($data as $val){
+                            echo "<option value=".htmlspecialchars($val["NR"]).','.htmlspecialchars($val["NC"]).','.htmlspecialchars($val["NP"]).'>'.htmlspecialchars($val["NOMR"]).' de '.htmlspecialchars($val["VILLE"]).' -> '.$val["NOMC"].' de '.htmlspecialchars($val["VILLEC"]).' : '.htmlspecialchars($val["NOMP"]).' '.htmlspecialchars($val["COUL"]).' ('.htmlspecialchars($val["PRIX"]).'€) x '.htmlspecialchars($val["QT"]).'</option>';
+                        }
                     ?>
                 </select>
 
@@ -1103,6 +1148,7 @@ function formSupression(){
             <label for="id_client">Client : </label>
                 <select id="id_client" name="client" size="1" class="form-control">
                 <?php
+                    // formulaire dynamique pour les clients
                     $data = get_table_with_id("cli");
                     foreach ($data as $val){
                         echo "<option value=".htmlspecialchars($val["NC"]).'>'.htmlspecialchars($val["NOMC"]).' '.htmlspecialchars($val["VILLE"]).'</option>';
@@ -1111,8 +1157,7 @@ function formSupression(){
                 ?>
                 </select>
             </article>
-
-            <?php genCaptchat(); ?>
+            <?php genCaptchat(); /* Génération du captcha */?>
 
             <br>
             <div class="text-center">
@@ -1137,9 +1182,11 @@ function formSupression(){
 }
 
 function supprimerClient($nc){
+    // Fonction qui permet de supprimer un client à partir de son identifiant
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // log du SQL
     analyseSQL("supprimerClient", [$nc]);
 
     $requete = "DELETE FROM CLIENTS WHERE nc=:nc";
@@ -1160,9 +1207,11 @@ function supprimerClient($nc){
 
 
 function supprimerRepr($nr){
+    // Fonction qui permet de supprimer un représentant à partir de son identifiant
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // log du SQL
     analyseSQL("supprimerRepr", [$nr]);
 
     $requete = "DELETE FROM REPRESENTANTS WHERE nr=:nr";
@@ -1183,9 +1232,11 @@ function supprimerRepr($nr){
 
 
 function supprimerProduit($np){
+    // Fonction qui permet de supprimer un produit à partir de son identifiant
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // log du SQL
     analyseSQL("supprimerProduit", [$np]);
 
     $requete = "DELETE FROM PRODUITS WHERE np=:np";
@@ -1206,9 +1257,11 @@ function supprimerProduit($np){
 
 
 function supprimerVente($nr, $nc, $np){
+    // Fonction qui permet de supprimer une vente à partir de son identifiant
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // log du SQL
     analyseSQL("supprimerVente", [$nr, $nc, $np]);
 
     $requete = "DELETE FROM VENTES WHERE nc=:nc AND np=:np AND nr=:nr";
@@ -1231,6 +1284,7 @@ function supprimerVente($nr, $nc, $np){
 
 
 function genSearchBar(){
+    // Fonction qui permet de générer la barre de recherche
 
     ?>
     <div class="row justify-content-center">
@@ -1249,11 +1303,14 @@ function genSearchBar(){
 }
 
 function getSearch($val){
+    // Fonction qui permet de rechercher une valeur, $val étant la bvaleur que le visiteur du site a mis dans la barre de recherche
     $db = new PDO('sqlite:bdd/repr.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // log du sql
     analyseSQL("getSearch", [$val]);
 
+    // préparation de la valeur à rechercher
     $val = "%$val%";
     $requete = "SELECT v.NR, v.NP, v.NC, NOMR,r.VILLE, NOMC, c.VILLE AS VILLEC, NOMP, COUL, PRIX, QT FROM VENTES v INNER JOIN REPRESENTANTS r ON r.NR = v.NR INNER JOIN CLIENTS c ON c.NC = v.NC INNER JOIN PRODUITS p ON p.NP = v.NP WHERE c.VILLE LIKE :val OR NOMC LIKE :val OR r.VILLE LIKE :val OR NOMR LIKE :val OR COUL LIKE :val OR NOMP LIKE :val";
 
@@ -1270,6 +1327,8 @@ function getSearch($val){
 
 
 function afficheLien($tab){
+    /* Fonction qui permet d'afficher le tableau après une recherche, chque ligne du tableau étant un lien
+    $tab => liste généré par sql */
     ?>
 
     <table class="table" id="id_table">
@@ -1285,9 +1344,10 @@ function afficheLien($tab){
     <tbody>
 
     <?php
+    // génération des colonnes avec lien clickable
     $i = 1;
     foreach($tab as $vals){
-        echo '<tr onclick="'."window.location='"."index.php?page=".$vals["NR"].$vals["NC"].$vals["NP"]."'".'">'."\n".'<td>'."$i"."</td>\n";
+        echo '<tr onclick="'."window.location='"."index.php?page=".$vals["NR"].','.$vals["NC"].','.$vals["NP"]."'".'">'."\n".'<td>'."$i"."</td>\n";
         echo '<td>'.htmlspecialchars($vals["NOMR"]).' de '.htmlspecialchars($vals["VILLE"])."</td>\n<td>".htmlspecialchars($vals["NOMC"]).' de '.htmlspecialchars($vals["VILLEC"])."</td>\n<td>".htmlspecialchars($vals["NOMP"]).' '.htmlspecialchars($vals["COUL"]).' ('.htmlspecialchars($vals["PRIX"])."€)</td>\n<td>".htmlspecialchars($vals["QT"])."</td>\n";
         echo "</tr>\n";
         $i += 1;
@@ -1326,16 +1386,23 @@ function afficheLien($tab){
 }
 
 function getPage($id){
+    /* Fonction qui permet d'afficher les détails d'une vente en fonction de l'id
+    $id est contruit sous la forme a,b,c avec
+    a => id représentant
+    b => id client
+    c => id produit*/
 
-    if (strlen($id) === 3){
+    if (substr_count($id, ',') === 2){
         $db = new PDO('sqlite:bdd/repr.sqlite');
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+        $array_id = explode(',', $id);
 
-        $nr = $id[0];
-        $nc = $id[1];
-        $np = $id[2];
+        $nr = $array_id[0];
+        $nc = $array_id[1];
+        $np = $array_id[2];
         
+        // log du sql
         analyseSQL("getPage", [$nr, $nc, $np]);
 
         $requete = "SELECT NOMR,r.VILLE, NOMC, c.VILLE AS VILLEC, NOMP, COUL, PRIX, QT FROM VENTES v INNER JOIN REPRESENTANTS r ON r.NR = v.NR INNER JOIN CLIENTS c ON c.NC = v.NC INNER JOIN PRODUITS p ON p.NP = v.NP WHERE v.NR=:nr AND v.NC=:nc AND v.NP=:np";
@@ -1345,7 +1412,7 @@ function getPage($id){
         $statement->bindValue(':nc', $nc, PDO::PARAM_INT);
         $statement->bindValue(':np', $np, PDO::PARAM_INT);
         
-
+        // affichage du tableau
         $statement->execute();
         if ($statement){
             $tab = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -1361,6 +1428,7 @@ function getPage($id){
 
 
 function genFooter(){
+    // génération du footer
     ?>
 
     <footer class="bg-dark container-fluid">
@@ -1379,6 +1447,7 @@ function genFooter(){
 
 
 function getProfilPic($username){
+    // récupere la photo de profil en fonction de l'utilisateur $username
     $db = new PDO('sqlite:bdd/comptes.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -1396,6 +1465,7 @@ function getProfilPic($username){
 }
 
 function getDispoPictures($statut){
+    // recupere toutes les photos de profil disponibles en fonction du status
     $vals = array_diff(scandir("images/"), [".", ".."]);
     if ($statut !== "administrateur"){
         $retour = [];
@@ -1412,6 +1482,7 @@ function getDispoPictures($statut){
 }
 
 function formChagePDP($statut){
+    // Formulaire de changement de la photo de profil, $statut étant le statut de l'utilisateur actuel
     ?>
     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
         <fieldset>
@@ -1435,7 +1506,10 @@ function formChagePDP($statut){
 }
 
 function changePDP($photo, $username, $statut){
+    // Focntion qui permet de changer la photo de profil
+    // verification que la photo est valide
     if (preg_match('/[a-zA-Z0-9]\.png/', $photo) && in_array($photo, getDispoPictures($statut), true)){
+        // ajout de la photo de profil
 
         $photo = "images/".$photo;
 
@@ -1462,6 +1536,7 @@ function changePDP($photo, $username, $statut){
 }
 
 function formPasswd(){
+    // FOrmulaire de changement de mot de passe
     ?>
     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
         <fieldset>
@@ -1476,6 +1551,9 @@ function formPasswd(){
 }
 
 function changePasswd($new_mdp, $username){
+    // fonction qui permet de changer le mot de passe en fonction de l'utilisateur : 
+    // $new_mdp => nouveau mot de passe
+    // $username => nom d'utilisateur de l'utilisateur actuel
     $db = new PDO('sqlite:bdd/comptes.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -1495,6 +1573,7 @@ function changePasswd($new_mdp, $username){
 
 
 function analyseSQL($nom_methode, $parametres){
+    // Analyse le SQL pour le loguer, $nom_methode => fonction qui a été appelé, $parametres => parametres à analyser
     $res = $_SERVER['REMOTE_ADDR']." -> ".$nom_methode."(";
     foreach($parametres as $param){
         $res = $res."[$param]";
@@ -1517,6 +1596,7 @@ function analyseSQL($nom_methode, $parametres){
             $suspect = $suspect."Parametre suspect : $param, > trouvé\n";
         }
     }
+    // enregistre dans suspect.log si suspect, sinon dans normal.log
     if ($suspect !== ""){
         $filename = "suspect.log";
     }
