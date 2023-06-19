@@ -259,6 +259,11 @@ function verif_mdp($pass){
             echo "<p>Le mot de passe doit contenir au moins une minuscule<p>";
 
         }
+        elseif (!preg_match("/[0-9]]/", $pass)) { /* Le mot de passe doit contenir au moins un chiffre  */
+            $verif = false;
+            echo "<p>Le mot de passe doit contenir au moins un chiffre<p>";
+
+        }   
         elseif (!preg_match("/\W/", $pass)) { /* Le mot de passe doit contenir au moins un caractère spécial */
             $verif = false;
             echo "<p>Le mot de passe doit contenir au moins un caractère spécial<p>";
@@ -325,8 +330,9 @@ function insert_compte($login, $pass){
         $statement = null;
     }
     if (!$statement){
-        return "Erreur, veuillez verifier votre entrée puis rééssayer";
         analyseSQL("ajouterComptesEchec",[$login]); /* Fonction log en cas d'échec */
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
+        
     }
 }
 
@@ -966,8 +972,9 @@ function modifClient($nc,$nomc,$ville){
         $statement = null;
     }
     if (!$statement){
-        return "Erreur, veuillez verifier votre entrée puis rééssayer";
         analyseSQL("modifierClientEchec", [$nc,$nomc,$ville]); /* Fonction log en cas d'échec*/
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
+        
     }
 }
 
@@ -1012,8 +1019,9 @@ function modifRepr($nr,$nomr,$ville){
         $statement = null;
     }
     if (!$statement){
-        return "Erreur, veuillez verifier votre entrée puis rééssayer";
         analyseSQL("modifierRepresentantEchec", [$nr,$nomr,$ville]);/* Fonction log en cas d'échec */
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
+        
     }
 }
 
@@ -1060,8 +1068,9 @@ function modifProduit($np,$nomp,$coul,$prix){
         $statement = null;
     }
     if (!$statement){
-        return "Erreur, veuillez verifier votre entrée puis rééssayer";
         analyseSQL("modifierProduitEchec", [$np,$nomp,$coul,$prix]);/* Fonction log en cas d'échec*/
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
+        
     }
 }
 
@@ -1107,8 +1116,9 @@ function modifVente($nr,$np,$nc,$qt){
         $statement = null;
     }
     if (!$statement){
-        return "Erreur, veuillez verifier votre entrée puis rééssayer";
         analyseSQL("modifierVenteEchec", [$nr,$np,$nc,$qt]);/* Fonction log en cas d'echec*/
+        return "Erreur, veuillez verifier votre entrée puis rééssayer";
+        
     }
 }
 
