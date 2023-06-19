@@ -74,14 +74,39 @@ function genNavBar($statut, $nom){
 
 function logout($ses,$stat){
 
-    analyseSQL("decnxComptes",[$ses,$stat]);
+    /*
+    Deconnexion du compte 
 
-    session_destroy();
+    En paramètre :
+    $ses : str : le login de l'utilisateur
+    $stat :  str : le statut de l'utilisateur (admin/user)
+
+    Retourne:
+    Rien
+    */
+
+    analyseSQL("decnxComptes",[$ses,$stat]); /*Fonction log */
+
+    /* Destruction de la session */
+    session_destroy(); 
     $_SESSION = array();
 }
 
 
 function validate_tab($login, $pass){
+
+    /*
+    Validation du login et mdp en retournant un tableau
+
+    En paramètre :
+    $login : str : login de l'utilisateur
+    $pass : str : le mot de passe de l'utilisateur
+
+    Retourne:
+    $valide_tab : array : tableau login, mdp et statut
+    Cela retourne un tableau vide si le compte n'existe pas
+
+    */
 
     
 
@@ -106,6 +131,8 @@ function validate_tab($login, $pass){
         foreach($comptes as $compte){
             if ($compte["login"] === $login && $compte["motdepasse"] === $pass) {
 
+                /* Selection du compte qui à le même login et mot de passe */
+
                 $requete_status = "SELECT * FROM comptes WHERE login = '$login' AND motdepasse = '$pass'";
                 $res = $dbc->query($requete_status);
                 $tab_login = $res->fetchAll(PDO::FETCH_ASSOC);
@@ -113,13 +140,13 @@ function validate_tab($login, $pass){
                 if ($tab_login[0]["statut"] === "administrateur"){
 
                     array_push($valide_tab, $login, $tab_login[0]["statut"]);
-                    analyseSQL("cnxComptes",[$login,"administrateur"]);
+                    analyseSQL("cnxComptes",[$login,"administrateur"]); /* Fonction log*/
                     $valide = true;
                     
                 }
                 else{
                     array_push($valide_tab, $login, $tab_login[0]["statut"]);
-                    analyseSQL("cnxComptes",[$login,"utilisateur"]);  
+                    analyseSQL("cnxComptes",[$login,"utilisateur"]);  /* Fonction log*/
                     $valide = true;
 
                 }
@@ -127,12 +154,12 @@ function validate_tab($login, $pass){
 
         }
         if($valide === false){
-            analyseSQL("cnxEchoueCompte",[$login]); 
+            analyseSQL("cnxEchoueCompte",[$login]); /* Fonction log en cas d'echec*/
         }
         
     }
     else{
-            analyseSQL("cnxEchoueCompte",[$login]); 
+            analyseSQL("cnxEchoueCompte",[$login]); /* Fonction log en cas d'echec*/
         }
         
     
@@ -144,6 +171,25 @@ function validate_tab($login, $pass){
 
 function valide_cnx($login, $pass){
 
+    /*
+    Verification du login et mdp
+
+    En paramètre :
+    $login : str : login de l'utilisateur
+    $pass : str : le mot de passe de l'utilisateur
+
+
+    Retourne:
+    $valide : booleen : retourne vrai si le compte existe, retourne faux dans le cas contraire
+
+
+
+
+
+
+    */
+
+
     $login = addslashes($login);
     $pass = addslashes($pass);
 
@@ -154,6 +200,8 @@ function valide_cnx($login, $pass){
     $dbc = new PDO('sqlite:bdd/comptes.sqlite');
     $dbc->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+
+    /* Selection de tous les comptes */
 
     $requete = "SELECT * FROM comptes;";
 
@@ -175,35 +223,45 @@ return $valide;
     
 function verif_mdp($pass){
 
+
+        /*
+    Verification du mot de passe
+
+    En paramètre :
+    $pass : str : le mot de passe de l'utilisateur
+
+    Retourne:
+    $verif : booleen : Retourne vrai si les contraintes sont respectées sinon faux
+
+    */
+
+
+
     $verif = false;
 
     if (!(empty($pass))){
 
-        if (strlen($pass) < 8 || strlen($pass) > 16) {
+        if (strlen($pass) < 8 || strlen($pass) > 16) { /* La taille du mot de passe entre 8 et 16 caractères */
             $verif = false;
             echo "<p>Le mot de passe doit être entre 8 à 16 caractères<p>";
-        }
-        elseif (!preg_match("/\d/", $pass)) {
-            $verif = false;
-            echo "<p>Le mot de passe doit contenir au moins un caractère<p>";
 
         }
-        elseif (!preg_match("/[A-Z]/", $pass)) {
+        elseif (!preg_match("/[A-Z]/", $pass)) { /* Le mot de passe doit contenir au moins une majuscule  */
             $verif = false;
             echo "<p>Le mot de passe doit contenir au moins une majuscule<p>";
 
         }
-        elseif (!preg_match("/[a-z]/", $pass)) {
+        elseif (!preg_match("/[a-z]/", $pass)) { /* Le mot de passe doit contenir au moins une minuscule  */
             $verif = false;
             echo "<p>Le mot de passe doit contenir au moins une minuscule<p>";
 
         }
-        elseif (!preg_match("/\W/", $pass)) {
+        elseif (!preg_match("/\W/", $pass)) { /* Le mot de passe doit contenir au moins un caractère spécial */
             $verif = false;
             echo "<p>Le mot de passe doit contenir au moins un caractère spécial<p>";
  
         }
-        elseif (preg_match("/\s/", $pass)) {
+        elseif (preg_match("/\s/", $pass)) { /* Le mot de passe ne doit pas avoir des espaces vides */
             $verif = false;
             echo "<p>Le mot de passe doit contenir aucun espace<p>";
 
@@ -226,11 +284,30 @@ function verif_mdp($pass){
 
 function insert_compte($login, $pass){
 
-    analyseSQL("Ajout compte",[$login]);
+
+
+            /*
+    Insertion du compte
+
+    En paramètre :
+    $login : str : login de l'utilisateur créé
+    $pass : str : le mot de passe de l'utilisateur créé
+
+    Retourne:
+    Rien
+
+    */
+
+
+
+    analyseSQL("ajouterComptes",[$login]); /* Fonction log */
 
 
     $dbc = new PDO('sqlite:bdd/comptes.sqlite');
     $dbc->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+
+    /* Inserstion du compte dans la base de donnée */
 
     $requete = "INSERT INTO COMPTES VALUES (:login, :pass,'utilisateur','images/photo1.png')";
     $statement = $dbc->prepare($requete);
@@ -246,7 +323,7 @@ function insert_compte($login, $pass){
     }
     if (!$statement){
         return "Erreur, veuillez verifier votre entrée puis rééssayer";
-        analyseSQL("ajouterComptes",[$login]); 
+        analyseSQL("ajouterComptesEchec",[$login]); /* Fonction log en cas d'échec */
     }
 }
 
@@ -595,6 +672,18 @@ function get_table_with_id($qui){
 
 function formeModif(){
 
+    /*
+    Fonction former menu déroulante dynamic pour la modification
+
+    En paramètre :
+    Rien
+
+    Retourne :
+    Rien
+
+    
+    */
+
 ?>
     
     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-group">
@@ -768,10 +857,31 @@ function formeModif(){
 function modifClient($nc,$nomc,$ville){
 
 
-    $db = new PDO('sqlite:bdd/repr.sqlite');
+             /*
+    Modification du client
+
+    En paramètre :
+    $nc : int: l'ID/ / clé primaire du client à modifier
+    $nomc : str : le nom du client modifié
+    $ville : str : la ville modifiée
+
+    Retourne si echec :
+    Un message d'erreur en cas d'échec
+
+    Retourne:
+    Rien
+
+    */
+
+
+    $db = new PDO('sqlite:bdd/repr.sqlite'); /*appel du fichier SQL*/
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    analyseSQL("modifierClient", [$nc,$nomc,$ville]);
+    analyseSQL("modifierClient", [$nc,$nomc,$ville]); /* Fonction log */
+
+
+    /*Mise à jour du client dans la base de donnée (Table CLIENTS )*/
+
 
     $requete = "UPDATE CLIENTS SET NOMC= :nomc, VILLE= :ville WHERE NC= :nc;";
     $statement = $db->prepare($requete);
@@ -788,17 +898,36 @@ function modifClient($nc,$nomc,$ville){
     }
     if (!$statement){
         return "Erreur, veuillez verifier votre entrée puis rééssayer";
+        analyseSQL("modifierClientEchec", [$nc,$nomc,$ville]); /* Fonction log en cas d'échec*/
     }
 }
 
 
 function modifRepr($nr,$nomr,$ville){
 
+                 /*
+    Modification du représentant
 
-    $db = new PDO('sqlite:bdd/repr.sqlite');
+    En paramètre :
+    $nc : int: l'ID/ / clé primaire du représentant à modifier
+    $nomc : str : le nom du représentant modifié
+    $ville : str : la ville modifiée
+
+    Retourne si echec :
+    Un message d'erreur en cas d'échec
+
+    Retourne:
+    Rien
+
+    */
+
+
+    $db = new PDO('sqlite:bdd/repr.sqlite');/*appel du fichier SQL*/
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    analyseSQL("modifierRepresentant", [$nr,$nomr,$ville]);
+    analyseSQL("modifierRepresentant", [$nr,$nomr,$ville]);/* Fonction log */
+
+    /*Mise à jour du représentant dans la base de donnée (Table REPRESENTANTS)*/
 
     $requete = "UPDATE REPRESENTANTS SET NOMR= :nomr, VILLE= :ville WHERE NR= :nr";
     $statement = $db->prepare($requete);
@@ -815,17 +944,37 @@ function modifRepr($nr,$nomr,$ville){
     }
     if (!$statement){
         return "Erreur, veuillez verifier votre entrée puis rééssayer";
+        analyseSQL("modifierRepresentantEchec", [$nr,$nomr,$ville]);/* Fonction log en cas d'échec */
     }
 }
 
 
 function modifProduit($np,$nomp,$coul,$prix){
 
+                     /*
+    Modification du produit
 
-    $db = new PDO('sqlite:bdd/repr.sqlite');
+    En paramètre :
+    $np : int: l'ID/ / clé primaire du produit à modifier
+    $nomp : str : le nom du produit modifié
+    $coul : str : la couleur modifiée
+    $prix : str : le prix modifié
+
+    Retourne si echec :
+    Un message d'erreur en cas d'échec
+
+    Retourne:
+    Rien
+
+    */
+
+
+    $db = new PDO('sqlite:bdd/repr.sqlite');/*appel du fichier SQL*/
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    analyseSQL("modifierProduit", [$np,$nomp,$coul,$prix]);
+    analyseSQL("modifierProduit", [$np,$nomp,$coul,$prix]);/* Fonction log */
+
+    /*Mise à jour du produit dans la base de donnée (Table PRODUITS)*/
 
     $requete = "UPDATE PRODUITS SET NOMP= :nomp, COUL= :coul, PRIX = :prix WHERE NP = :np";
     $statement = $db->prepare($requete);
@@ -843,16 +992,36 @@ function modifProduit($np,$nomp,$coul,$prix){
     }
     if (!$statement){
         return "Erreur, veuillez verifier votre entrée puis rééssayer";
+        analyseSQL("modifierProduitEchec", [$np,$nomp,$coul,$prix]);/* Fonction log en cas d'échec*/
     }
 }
 
 function modifVente($nr,$np,$nc,$qt){
 
+                         /*
+    Modification du produit
 
-    $db = new PDO('sqlite:bdd/repr.sqlite');
+    En paramètre :
+    $nc : int: l'ID/ / clé primaire du représentant à modifier
+    $np : int: l'ID/ / clé primaire du produit à modifier
+    $np : int: l'ID/ / clé primaire du client à modifier
+    $qt : int: Quantité modifiée de la vente
+
+    Retourne si echec :
+    Un message d'erreur en cas d'échec
+
+    Retourne:
+    Rien
+
+    */
+
+
+    $db = new PDO('sqlite:bdd/repr.sqlite');/*appel du fichier SQL*/
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    analyseSQL("modifierVente", [$nr,$np,$nc,$qt]);
+    analyseSQL("modifierVente", [$nr,$np,$nc,$qt]);/* Fonction log */
+
+    /*Mise à jour des ventes dans la base de donnée (Table VENTES)*/
 
     $requete = "UPDATE VENTES SET QT = :qt WHERE  NR= :nr AND NP= :np AND NC = :nr";
     $statement = $db->prepare($requete);
@@ -870,6 +1039,7 @@ function modifVente($nr,$np,$nc,$qt){
     }
     if (!$statement){
         return "Erreur, veuillez verifier votre entrée puis rééssayer";
+        analyseSQL("modifierVenteEchec", [$nr,$np,$nc,$qt]);/* Fonction log en cas d'echec*/
     }
 }
 
